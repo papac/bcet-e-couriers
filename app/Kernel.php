@@ -53,7 +53,12 @@ class Kernel extends ApplicationLoader
         return [
             'csrf' => \App\Middlewares\RequestCsrfMiddleware::class,
             'auth' => \App\Middlewares\AuthenticateMiddleware::class,
-            'guest' => \App\Middlewares\GuestMiddleware::class
+            'guest' => \App\Middlewares\GuestMiddleware::class,
+            'admin' => \App\Middlewares\AdminMiddleware::class,
+            'agent' => \App\Middlewares\AgentMiddleware::class,
+            'rate.limit' => \App\Middlewares\RateLimitMiddleware::class,
+            'login.limit' => \App\Middlewares\LoginRateLimitMiddleware::class,
+            'security.headers' => \App\Middlewares\SecurityHeadersMiddleware::class
         ];
     }
 

@@ -57,6 +57,12 @@ return [
     'httponly' => (bool) app_env('SESSION_HTTPONLY', true),
 
     /**
+     * SameSite cookie attribute for CSRF protection
+     * Options: 'Lax', 'Strict', 'None'
+     */
+    'samesite' => 'Lax',
+
+    /**
      * Session data path.
      * If path is specified, the path of the folder will be changed.
      *

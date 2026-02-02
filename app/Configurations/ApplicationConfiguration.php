@@ -15,7 +15,8 @@ class ApplicationConfiguration extends Configuration
      */
     public function create(Loader $config): void
     {
-        //
+        // Set security headers globally
+        $this->setSecurityHeaders();
     }
 
     /**
@@ -26,5 +27,28 @@ class ApplicationConfiguration extends Configuration
     public function run(): void
     {
         //
+    }
+
+    /**
+     * Set security headers for all responses
+     *
+     * @return void
+     */
+    protected function setSecurityHeaders(): void
+    {
+        // Prevent MIME type sniffing
+        header('X-Content-Type-Options: nosniff');
+        
+        // Enable XSS protection
+        header('X-XSS-Protection: 1; mode=block');
+        
+        // Prevent clickjacking
+        header('X-Frame-Options: SAMEORIGIN');
+        
+        // Referrer Policy
+        header('Referrer-Policy: strict-origin-when-cross-origin');
+        
+        // Permissions Policy
+        header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
     }
 }

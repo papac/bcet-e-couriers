@@ -26,7 +26,7 @@ return [
      * @see https://www.php.net/manual/fr/password.constants.php
      */
     'hash_options' => [
-        'cost' => 10
+        'cost' => 12
     ],
 
     /**

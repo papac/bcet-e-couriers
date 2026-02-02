@@ -1,0 +1,174 @@
+%extends('layouts.app')
+
+%block('title', 'Nouveau colis - BCET e-Couriers')
+
+%block('content')
+<div x-data="{ sidebarOpen: false }" class="min-h-screen bg-gray-100">
+    <!-- Mobile sidebar -->
+    <div x-show="sidebarOpen" class="fixed inset-0 z-40 lg:hidden" x-cloak>
+        <div x-show="sidebarOpen" class="fixed inset-0 bg-gray-600 bg-opacity-75" @click="sidebarOpen = false"></div>
+        <div x-show="sidebarOpen" class="relative flex-1 flex flex-col max-w-xs w-full bg-primary-800">
+            %include('partials.agent-sidebar')
+        </div>
+    </div>
+
+    <!-- Desktop sidebar -->
+    <div class="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0">
+        <div class="flex-1 flex flex-col min-h-0 bg-primary-800">
+            %include('partials.agent-sidebar')
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="lg:pl-64 flex flex-col flex-1">
+        <!-- Top bar -->
+        <div class="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow">
+            <button @click="sidebarOpen = true" class="px-4 border-r border-gray-200 text-gray-500 focus:outline-none lg:hidden">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                </svg>
+            </button>
+            <div class="flex-1 px-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="/agent/couriers" class="text-gray-500 hover:text-gray-700 mr-4">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                    </a>
+                    <h1 class="text-xl font-semibold text-gray-900">Nouveau colis</h1>
+                </div>
+                <a href="/logout" class="text-sm text-red-600 hover:text-red-800">Déconnexion</a>
+            </div>
+        </div>
+
+        <main class="flex-1 p-6">
+            %if(flash('error'))
+            <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {{ flash('error') }}
+            </div>
+            %endif
+
+            <form action="/agent/couriers" method="POST" class="space-y-6">
+                {{ csrf_field() }}
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Sender Information -->
+                    <div class="bg-white shadow rounded-xl">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                                <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                Informations de l'expéditeur
+                            </h3>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div>
+                                <label for="sender_name" class="block text-sm font-medium text-gray-700 mb-1">Nom complet *</label>
+                                <input type="text" name="sender_name" id="sender_name" required
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                    placeholder="Nom de l'expéditeur">
+                            </div>
+                            <div>
+                                <label for="sender_phone" class="block text-sm font-medium text-gray-700 mb-1">Téléphone *</label>
+                                <input type="tel" name="sender_phone" id="sender_phone" required
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                    placeholder="+225 XX XX XX XX XX">
+                            </div>
+                            <div>
+                                <label for="sender_address" class="block text-sm font-medium text-gray-700 mb-1">Adresse *</label>
+                                <textarea name="sender_address" id="sender_address" rows="3" required
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                    placeholder="Adresse complète de l'expéditeur"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Receiver Information -->
+                    <div class="bg-white shadow rounded-xl">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                                <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Informations du destinataire
+                            </h3>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div>
+                                <label for="receiver_name" class="block text-sm font-medium text-gray-700 mb-1">Nom complet *</label>
+                                <input type="text" name="receiver_name" id="receiver_name" required
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                    placeholder="Nom du destinataire">
+                            </div>
+                            <div>
+                                <label for="receiver_phone" class="block text-sm font-medium text-gray-700 mb-1">Téléphone *</label>
+                                <input type="tel" name="receiver_phone" id="receiver_phone" required
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                    placeholder="+225 XX XX XX XX XX">
+                            </div>
+                            <div>
+                                <label for="receiver_address" class="block text-sm font-medium text-gray-700 mb-1">Adresse *</label>
+                                <textarea name="receiver_address" id="receiver_address" rows="3" required
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                    placeholder="Adresse complète du destinataire"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Package Details -->
+                <div class="bg-white shadow rounded-xl">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                            Détails du colis
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <input type="text" name="description" id="description"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                    placeholder="Ex: Documents, Vêtements...">
+                            </div>
+                            <div>
+                                <label for="weight" class="block text-sm font-medium text-gray-700 mb-1">Poids (kg)</label>
+                                <input type="number" name="weight" id="weight" step="0.1" min="0"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                    placeholder="0.0">
+                            </div>
+                            <div>
+                                <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Prix (FCFA)</label>
+                                <input type="number" name="price" id="price" step="100" min="0"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                    placeholder="0">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                            <textarea name="notes" id="notes" rows="2"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                placeholder="Notes additionnelles sur le colis..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="flex items-center justify-end space-x-4">
+                    <a href="/agent/couriers" class="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        Annuler
+                    </a>
+                    <button type="submit" class="px-8 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        Enregistrer le colis
+                    </button>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+%endblock
