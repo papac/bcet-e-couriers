@@ -207,6 +207,120 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Attached Files Section -->
+            <div class="mt-6 bg-white shadow rounded-xl" x-data="fileUpload()">
+                <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                        </svg>
+                        Pièces jointes
+                        <span class="ml-2 text-sm text-gray-500 font-normal">({{ count($files) }} fichier(s))</span>
+                    </h3>
+                    <button type="button" @click="showUploadForm = !showUploadForm" class="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                        + Ajouter des fichiers
+                    </button>
+                </div>
+                
+                <!-- Upload Form -->
+                <div x-show="showUploadForm" x-collapse class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                    <form action="/agent/couriers/{{ $courier->id }}/files" method="POST" enctype="multipart/form-data">
+                        {{ csrf_field() }}
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary-400 transition-colors"
+                            @dragover.prevent="dragover = true"
+                            @dragleave.prevent="dragover = false"
+                            @drop.prevent="handleDrop($event)"
+                            :class="{ 'border-primary-500 bg-primary-50': dragover }">
+                            <input type="file" name="files[]" id="new_files" multiple 
+                                accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx"
+                                class="hidden" @change="handleFiles($event)">
+                            <label for="new_files" class="cursor-pointer">
+                                <svg class="mx-auto h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                                <p class="mt-1 text-sm text-gray-600">
+                                    <span class="font-semibold text-primary-600">Cliquez</span> ou glissez-déposez
+                                </p>
+                            </label>
+                        </div>
+                        
+                        <!-- File Preview List -->
+                        <div x-show="files.length > 0" class="mt-3 space-y-2">
+                            <template x-for="(file, index) in files" :key="index">
+                                <div class="flex items-center justify-between p-2 bg-white rounded border">
+                                    <span class="text-sm text-gray-700 truncate" x-text="file.name"></span>
+                                    <button type="button" @click="removeFile(index)" class="text-red-500 hover:text-red-700">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                        
+                        <div x-show="files.length > 0" class="mt-3 flex justify-end">
+                            <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">
+                                Télécharger
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Files List -->
+                <div class="p-6">
+                    %if(count($files) > 0)
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        %foreach($files as $file)
+                        <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-shrink-0">
+                                    %if($file->isImage())
+                                    <a href="{{ $file->getUrl() }}" target="_blank">
+                                        <img src="{{ $file->getUrl() }}" alt="{{ $file->original_name }}" class="h-16 w-16 object-cover rounded-lg">
+                                    </a>
+                                    %elseif($file->isPdf())
+                                    <div class="h-16 w-16 bg-red-100 rounded-lg flex items-center justify-center">
+                                        <svg class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    %else
+                                    <div class="h-16 w-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <svg class="h-8 w-8 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                    </div>
+                                    %endif
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-medium text-gray-900 truncate" title="{{ $file->original_name }}">{{ $file->original_name }}</p>
+                                    <p class="text-xs text-gray-500 mt-1">{{ $file->getFormattedSize() }}</p>
+                                    <p class="text-xs text-gray-400 mt-1">{{ date('d/m/Y H:i', strtotime($file->created_at)) }}</p>
+                                    <div class="mt-2 flex space-x-2">
+                                        <a href="{{ $file->getUrl() }}" target="_blank" class="text-xs text-primary-600 hover:text-primary-700">Voir</a>
+                                        <a href="{{ $file->getUrl() }}" download="{{ $file->original_name }}" class="text-xs text-gray-600 hover:text-gray-700">Télécharger</a>
+                                        <form action="/agent/couriers/{{ $courier->id }}/files/{{ $file->id }}" method="POST" class="inline" onsubmit="return confirm('Supprimer ce fichier ?')">
+                                            {{ csrf_field() }}
+                                            {{ method_field('DELETE') }}
+                                            <button type="submit" class="text-xs text-red-600 hover:text-red-700">Supprimer</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        %endforeach
+                    </div>
+                    %else
+                    <div class="text-center py-8 text-gray-500">
+                        <svg class="mx-auto h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        <p class="mt-2 text-sm">Aucun fichier attaché</p>
+                    </div>
+                    %endif
+                </div>
+            </div>
         </main>
     </div>
 
@@ -250,4 +364,59 @@
         </div>
     </div>
 </div>
+
+<script>
+function fileUpload() {
+    return {
+        files: [],
+        dragover: false,
+        showUploadForm: false,
+        maxFiles: 10,
+        maxSize: 5 * 1024 * 1024,
+        allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        
+        handleFiles(event) {
+            this.addFiles(event.target.files);
+        },
+        
+        handleDrop(event) {
+            this.dragover = false;
+            this.addFiles(event.dataTransfer.files);
+        },
+        
+        addFiles(fileList) {
+            for (let file of fileList) {
+                if (this.files.length >= this.maxFiles) {
+                    alert('Maximum ' + this.maxFiles + ' fichiers autorisés');
+                    break;
+                }
+                
+                if (file.size > this.maxSize) {
+                    alert('Le fichier ' + file.name + ' est trop volumineux (max 5MB)');
+                    continue;
+                }
+                
+                if (!this.allowedTypes.includes(file.type)) {
+                    alert('Type de fichier non autorisé: ' + file.name);
+                    continue;
+                }
+                
+                this.files.push(file);
+            }
+            this.updateFileInput();
+        },
+        
+        removeFile(index) {
+            this.files.splice(index, 1);
+            this.updateFileInput();
+        },
+        
+        updateFileInput() {
+            const dataTransfer = new DataTransfer();
+            this.files.forEach(file => dataTransfer.items.add(file));
+            document.getElementById('new_files').files = dataTransfer.files;
+        }
+    }
+}
+</script>
 %endblock

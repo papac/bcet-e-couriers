@@ -112,6 +112,16 @@ class Courier extends Model
     }
 
     /**
+     * Get attached files
+     *
+     * @return \Bow\Database\Barry\Relations\HasMany
+     */
+    public function files()
+    {
+        return $this->hasMany(CourierFile::class, 'courier_id');
+    }
+
+    /**
      * Get formatted status label
      *
      * @return string

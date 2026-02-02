@@ -3,6 +3,7 @@
 namespace App\Controllers\Agent;
 
 use App\Models\Courier;
+use App\Models\CourierFile;
 use App\Models\CourierStatusHistory;
 use Bow\Http\Request;
 
@@ -92,6 +93,9 @@ class CourierController
             'comment' => 'Colis reçu et enregistré'
         ]);
 
+        // Handle file uploads
+        $this->handleFileUploads($request, $courier);
+
         return redirect('/agent/couriers')->withFlash('success', "Colis créé avec succès. N° de suivi: {$courier->tracking_number}");
     }
 
@@ -114,7 +118,11 @@ class CourierController
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('agent.couriers.show', compact('courier', 'history'));
+        $files = CourierFile::where('courier_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('agent.couriers.show', compact('courier', 'history', 'files'));
     }
 
     /**
@@ -211,5 +219,148 @@ class CourierController
         ]);
 
         return redirect("/agent/couriers/{$id}")->withFlash('success', 'Statut mis à jour avec succès');
+    }
+
+    /**
+     * Handle file uploads for courier
+     *
+     * @param Request $request
+     * @param Courier $courier
+     * @return void
+     */
+    protected function handleFileUploads(Request $request, Courier $courier): void
+    {
+        $files = $request->file('files');
+        
+        if (empty($files) || !is_array($files['name'])) {
+            return;
+        }
+
+        // Create upload directory if not exists
+        $uploadDir = storage_path('couriers');
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        // Also create public symlink directory
+        $publicDir = public_path('storage/couriers');
+        if (!is_dir($publicDir)) {
+            mkdir($publicDir, 0755, true);
+        }
+
+        $fileCount = count(array_filter($files['name']));
+        
+        // Check max files limit
+        $existingCount = CourierFile::where('courier_id', $courier->id)->count();
+        if ($existingCount + $fileCount > CourierFile::MAX_FILES_PER_COURIER) {
+            return;
+        }
+
+        for ($i = 0; $i < $fileCount; $i++) {
+            if (empty($files['name'][$i]) || $files['error'][$i] !== UPLOAD_ERR_OK) {
+                continue;
+            }
+
+            $file = [
+                'name' => $files['name'][$i],
+                'type' => $files['type'][$i],
+                'tmp_name' => $files['tmp_name'][$i],
+                'error' => $files['error'][$i],
+                'size' => $files['size'][$i]
+            ];
+
+            // Validate file
+            $validationError = CourierFile::validateFile($file);
+            if ($validationError !== null) {
+                continue;
+            }
+
+            // Generate unique filename
+            $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $filename = $courier->tracking_number . '_' . uniqid() . '.' . $extension;
+            $filepath = $uploadDir . '/' . $filename;
+
+            // Move uploaded file
+            if (move_uploaded_file($file['tmp_name'], $filepath)) {
+                // Copy to public directory for access
+                copy($filepath, $publicDir . '/' . $filename);
+
+                // Get actual MIME type
+                $finfo = new \finfo(FILEINFO_MIME_TYPE);
+                $mimeType = $finfo->file($filepath);
+
+                // Create database record
+                CourierFile::create([
+                    'courier_id' => $courier->id,
+                    'filename' => $filename,
+                    'original_name' => $file['name'],
+                    'mime_type' => $mimeType,
+                    'size' => $file['size'],
+                    'path' => 'couriers/' . $filename,
+                    'uploaded_by' => auth()->user()->id
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Upload additional files to existing courier
+     *
+     * @param Request $request
+     * @param int $id
+     * @return mixed
+     */
+    public function uploadFiles(Request $request, int $id)
+    {
+        $user = auth()->user();
+        $courier = Courier::where('id', $id)->where('agent_id', $user->id)->first();
+        
+        if (!$courier) {
+            return redirect('/agent/couriers')->withFlash('error', 'Colis non trouvé');
+        }
+
+        $this->handleFileUploads($request, $courier);
+
+        return redirect("/agent/couriers/{$id}")->withFlash('success', 'Fichiers ajoutés avec succès');
+    }
+
+    /**
+     * Delete a file from courier
+     *
+     * @param Request $request
+     * @param int $courierId
+     * @param int $fileId
+     * @return mixed
+     */
+    public function deleteFile(Request $request, int $courierId, int $fileId)
+    {
+        $user = auth()->user();
+        $courier = Courier::where('id', $courierId)->where('agent_id', $user->id)->first();
+        
+        if (!$courier) {
+            return redirect('/agent/couriers')->withFlash('error', 'Colis non trouvé');
+        }
+
+        $file = CourierFile::where('id', $fileId)->where('courier_id', $courierId)->first();
+        
+        if (!$file) {
+            return redirect("/agent/couriers/{$courierId}")->withFlash('error', 'Fichier non trouvé');
+        }
+
+        // Delete physical files
+        $storagePath = storage_path('couriers/' . $file->filename);
+        $publicPath = public_path('storage/couriers/' . $file->filename);
+        
+        if (file_exists($storagePath)) {
+            unlink($storagePath);
+        }
+        if (file_exists($publicPath)) {
+            unlink($publicPath);
+        }
+
+        // Delete database record
+        $file->delete();
+
+        return redirect("/agent/couriers/{$courierId}")->withFlash('success', 'Fichier supprimé avec succès');
     }
 }

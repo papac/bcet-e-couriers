@@ -176,6 +176,112 @@
                         </div>
                     </dl>
                 </div>
+
+                <!-- Status History -->
+                <div class="bg-white shadow rounded-xl p-6 lg:col-span-2">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Historique des statuts
+                    </h3>
+                    <div class="flow-root">
+                        <ul class="-mb-8">
+                            %if(count($history) > 0)
+                                %foreach($history as $index => $item)
+                                <li>
+                                    <div class="relative pb-8">
+                                        %if($index < count($history) - 1)
+                                        <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                                        %endif
+                                        <div class="relative flex space-x-3">
+                                            <div>
+                                                <span class="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center ring-8 ring-white">
+                                                    <svg class="h-4 w-4 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                            <div class="min-w-0 flex-1 pt-1.5">
+                                                <p class="text-sm text-gray-900">
+                                                    Statut changé vers <span class="font-medium">{{ \App\Models\Courier::getStatusOptions()[$item->new_status] ?? $item->new_status }}</span>
+                                                </p>
+                                                %if($item->comment)
+                                                <p class="mt-1 text-sm text-gray-500">{{ $item->comment }}</p>
+                                                %endif
+                                                <p class="mt-1 text-xs text-gray-400">{{ date('d/m/Y H:i', strtotime($item->created_at)) }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                %endforeach
+                            %else
+                                <li class="text-sm text-gray-500">Aucun historique disponible</li>
+                            %endif
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attached Files Section -->
+            <div class="mt-6 bg-white shadow rounded-xl">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                        </svg>
+                        Pièces jointes
+                        <span class="ml-2 text-sm text-gray-500 font-normal">({{ count($files) }} fichier(s))</span>
+                    </h3>
+                </div>
+                
+                <div class="p-6">
+                    %if(count($files) > 0)
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        %foreach($files as $file)
+                        <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-shrink-0">
+                                    %if($file->isImage())
+                                    <a href="{{ $file->getUrl() }}" target="_blank">
+                                        <img src="{{ $file->getUrl() }}" alt="{{ $file->original_name }}" class="h-16 w-16 object-cover rounded-lg">
+                                    </a>
+                                    %elseif($file->isPdf())
+                                    <div class="h-16 w-16 bg-red-100 rounded-lg flex items-center justify-center">
+                                        <svg class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    %else
+                                    <div class="h-16 w-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <svg class="h-8 w-8 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                    </div>
+                                    %endif
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-medium text-gray-900 truncate" title="{{ $file->original_name }}">{{ $file->original_name }}</p>
+                                    <p class="text-xs text-gray-500 mt-1">{{ $file->getFormattedSize() }}</p>
+                                    <p class="text-xs text-gray-400 mt-1">{{ date('d/m/Y H:i', strtotime($file->created_at)) }}</p>
+                                    <div class="mt-2 flex space-x-2">
+                                        <a href="{{ $file->getUrl() }}" target="_blank" class="text-xs text-primary-600 hover:text-primary-700">Voir</a>
+                                        <a href="{{ $file->getUrl() }}" download="{{ $file->original_name }}" class="text-xs text-gray-600 hover:text-gray-700">Télécharger</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        %endforeach
+                    </div>
+                    %else
+                    <div class="text-center py-8 text-gray-500">
+                        <svg class="mx-auto h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        <p class="mt-2 text-sm">Aucun fichier attaché</p>
+                    </div>
+                    %endif
+                </div>
             </div>
         </main>
     </div>

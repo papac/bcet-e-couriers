@@ -49,4 +49,8 @@ $router->middleware(['auth', 'agent'])->prefix('/agent', function () use ($route
     $router->get('/couriers/:id/edit', [AgentCourierController::class, 'edit'])->name('agent.couriers.edit');
     $router->put('/couriers/:id', [AgentCourierController::class, 'update'])->name('agent.couriers.update');
     $router->put('/couriers/:id/status', [AgentCourierController::class, 'updateStatus'])->name('agent.couriers.status');
+    
+    // File management
+    $router->post('/couriers/:id/files', [AgentCourierController::class, 'uploadFiles'])->name('agent.couriers.files.upload');
+    $router->delete('/couriers/:courierId/files/:fileId', [AgentCourierController::class, 'deleteFile'])->name('agent.couriers.files.delete');
 });

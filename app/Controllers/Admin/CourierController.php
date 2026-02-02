@@ -3,6 +3,8 @@
 namespace App\Controllers\Admin;
 
 use App\Models\Courier;
+use App\Models\CourierFile;
+use App\Models\CourierStatusHistory;
 use App\Models\User;
 use Bow\Http\Request;
 
@@ -59,7 +61,15 @@ class CourierController
             return redirect('/admin/couriers')->withFlash('error', 'Colis non trouvé');
         }
 
-        return view('admin.couriers.show', compact('courier'));
+        $history = CourierStatusHistory::where('courier_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $files = CourierFile::where('courier_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.couriers.show', compact('courier', 'history', 'files'));
     }
 
     /**

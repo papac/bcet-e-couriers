@@ -48,7 +48,7 @@
             </div>
             %endif
 
-            <form action="/agent/couriers" method="POST" class="space-y-6">
+            <form action="/agent/couriers" method="POST" enctype="multipart/form-data" class="space-y-6">
                 {{ csrf_field() }}
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -158,6 +158,73 @@
                     </div>
                 </div>
 
+                <!-- File Attachments -->
+                <div class="bg-white shadow rounded-xl" x-data="fileUpload()">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                            </svg>
+                            Pièces jointes
+                            <span class="ml-2 text-sm text-gray-500 font-normal">(max 10 fichiers, 5MB par fichier)</span>
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary-400 transition-colors"
+                            @dragover.prevent="dragover = true"
+                            @dragleave.prevent="dragover = false"
+                            @drop.prevent="handleDrop($event)"
+                            :class="{ 'border-primary-500 bg-primary-50': dragover }">
+                            <input type="file" name="files[]" id="files" multiple 
+                                accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx"
+                                class="hidden" @change="handleFiles($event)">
+                            <label for="files" class="cursor-pointer">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                                <p class="mt-2 text-sm text-gray-600">
+                                    <span class="font-semibold text-primary-600 hover:text-primary-500">Cliquez pour sélectionner</span>
+                                    ou glissez-déposez vos fichiers
+                                </p>
+                                <p class="mt-1 text-xs text-gray-500">
+                                    Images (JPG, PNG, GIF), PDF, Documents Word, Excel
+                                </p>
+                            </label>
+                        </div>
+
+                        <!-- File Preview List -->
+                        <div x-show="files.length > 0" class="mt-4 space-y-2">
+                            <template x-for="(file, index) in files" :key="index">
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="flex-shrink-0">
+                                            <template x-if="isImage(file)">
+                                                <img :src="getPreview(file)" class="h-10 w-10 object-cover rounded">
+                                            </template>
+                                            <template x-if="!isImage(file)">
+                                                <div class="h-10 w-10 bg-gray-200 rounded flex items-center justify-center">
+                                                    <svg class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-medium text-gray-900 truncate" x-text="file.name"></p>
+                                            <p class="text-xs text-gray-500" x-text="formatSize(file.size)"></p>
+                                        </div>
+                                    </div>
+                                    <button type="button" @click="removeFile(index)" class="text-red-500 hover:text-red-700">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Submit Buttons -->
                 <div class="flex items-center justify-end space-x-4">
                     <a href="/agent/couriers" class="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
@@ -171,4 +238,72 @@
         </main>
     </div>
 </div>
+
+<script>
+function fileUpload() {
+    return {
+        files: [],
+        dragover: false,
+        maxFiles: 10,
+        maxSize: 5 * 1024 * 1024,
+        allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        
+        handleFiles(event) {
+            this.addFiles(event.target.files);
+        },
+        
+        handleDrop(event) {
+            this.dragover = false;
+            this.addFiles(event.dataTransfer.files);
+        },
+        
+        addFiles(fileList) {
+            for (let file of fileList) {
+                if (this.files.length >= this.maxFiles) {
+                    alert('Maximum ' + this.maxFiles + ' fichiers autorisés');
+                    break;
+                }
+                
+                if (file.size > this.maxSize) {
+                    alert('Le fichier ' + file.name + ' est trop volumineux (max 5MB)');
+                    continue;
+                }
+                
+                if (!this.allowedTypes.includes(file.type)) {
+                    alert('Type de fichier non autorisé: ' + file.name);
+                    continue;
+                }
+                
+                this.files.push(file);
+            }
+            this.updateFileInput();
+        },
+        
+        removeFile(index) {
+            this.files.splice(index, 1);
+            this.updateFileInput();
+        },
+        
+        updateFileInput() {
+            const dataTransfer = new DataTransfer();
+            this.files.forEach(file => dataTransfer.items.add(file));
+            document.getElementById('files').files = dataTransfer.files;
+        },
+        
+        isImage(file) {
+            return file.type.startsWith('image/');
+        },
+        
+        getPreview(file) {
+            return URL.createObjectURL(file);
+        },
+        
+        formatSize(bytes) {
+            if (bytes >= 1048576) return (bytes / 1048576).toFixed(2) + ' MB';
+            if (bytes >= 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            return bytes + ' bytes';
+        }
+    }
+}
+</script>
 %endblock
