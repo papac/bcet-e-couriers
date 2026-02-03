@@ -11,27 +11,24 @@ class Version20260202100002CreateCourierStatusHistoryTable extends Migration
     public function up(): void
     {
         $this->create("courier_status_history", function (Table $table) {
-            $table->addIncrement('id');
-            
+            $table->addBigIncrement('id');
+            $table->addInteger('courier_id', ['nullable' => true]);
+            $table->addInteger('changed_by', ['nullable' => true]);
+            $table->addColumn('old_status', 'enum', ['size' => ['pending', 'received', 'in_transit', 'delivered', 'returned'], 'nullable' => true]);
+            $table->addColumn('new_status', 'enum', ['size' => ['pending', 'received', 'in_transit', 'delivered', 'returned']]);
+            $table->addText('comment', ['nullable' => true]);
             $table->addForeign('courier_id', [
                 'table' => 'couriers',
-                'column' => 'id',
-                'onDelete' => 'CASCADE'
+                'references' => 'id',
+                'on' => 'delete cascade'
             ]);
-            
             $table->addForeign('changed_by', [
                 'table' => 'users',
-                'column' => 'id',
-                'onDelete' => 'SET NULL',
+                'references' => 'id',
+                'on' => 'delete set null',
                 'nullable' => true
             ]);
-            
-            $table->addEnum('old_status', ["size" => ['pending', 'received', 'in_transit', 'delivered', 'returned'], 'nullable' => true]);
-            $table->addEnum('new_status', ['pending', 'received', 'in_transit', 'delivered', 'returned']);
-            $table->addText('comment', ['nullable' => true]);
-
             $table->addTimestamps();
-            $table->withEngine('InnoDB');
         });
     }
 

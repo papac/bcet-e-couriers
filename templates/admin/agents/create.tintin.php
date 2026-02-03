@@ -1,6 +1,6 @@
 %extends('layouts.app')
 
-%block('title', 'Nouvel agent - BCET e-Couriers')
+%block('title', 'Nouvel agent - BCET/COURRIER')
 
 %block('content')
 <div x-data="{ sidebarOpen: false }" class="min-h-screen bg-gray-100">

@@ -1,6 +1,6 @@
 %extends('layouts.app')
 
-%block('title', 'Tous les colis - BCET e-Couriers')
+%block('title', 'Tous les colis - BCET/COURRIER')
 
 %block('content')
 <div x-data="{ sidebarOpen: false }" class="min-h-screen bg-gray-100">
@@ -51,17 +51,17 @@
                     <div class="sm:w-48">
                         <select name="status" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <option value="">Tous les statuts</option>
-                            %foreach($statuses as $key => $label)
+                            %loop($statuses as $key => $label)
                             <option value="{{ $key }}" {{ ($status ?? '') === $key ? 'selected' : '' }}>{{ $label }}</option>
-                            %endforeach
+                            %endloop
                         </select>
                     </div>
                     <div class="sm:w-48">
                         <select name="agent_id" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <option value="">Tous les agents</option>
-                            %foreach($agents as $agent)
+                            %loop($agents as $agent)
                             <option value="{{ $agent->id }}" {{ ($agent_id ?? '') == $agent->id ? 'selected' : '' }}>{{ $agent->name }}</option>
-                            %endforeach
+                            %endloop
                         </select>
                     </div>
                     <button type="submit" class="px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
@@ -87,7 +87,7 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             %if(count($couriers) > 0)
-                                %foreach($couriers as $courier)
+                                %loop($couriers as $courier)
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="text-sm font-mono font-medium text-primary-600">{{ $courier->tracking_number }}</span>
@@ -131,7 +131,7 @@
                                         </a>
                                     </td>
                                 </tr>
-                                %endforeach
+                                %endloop
                             %else
                                 <tr>
                                     <td colspan="7" class="px-6 py-12 text-center text-gray-500">

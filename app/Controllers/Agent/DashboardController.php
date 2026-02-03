@@ -15,7 +15,7 @@ class DashboardController
     public function index(): string
     {
         $user = auth()->user();
-        
+
         $stats = [
             'total_couriers' => Courier::where('agent_id', $user->id)->count(),
             'pending_couriers' => Courier::where('agent_id', $user->id)->where('status', 'pending')->count(),

@@ -11,7 +11,7 @@ class Version20260202100000AddRoleToUsersTable extends Migration
     public function up(): void
     {
         $this->alter("users", function (Table $table) {
-            $table->addEnum('role', ['size' => ['admin', 'agent'], 'default' => 'agent']);
+            $table->addColumn('role', 'enum', ['size' => ['admin', 'agent'], 'default' => 'agent']);
             $table->addString('phone', ['nullable' => true]);
             $table->addBoolean('is_active', ['default' => true]);
         });

@@ -21,7 +21,7 @@ class AgentMiddleware
         }
 
         $user = Auth::user();
-        
+
         if (!$user->isAgent() && !$user->isAdmin()) {
             return redirect('/login')->withFlash('error', 'Accès non autorisé');
         }

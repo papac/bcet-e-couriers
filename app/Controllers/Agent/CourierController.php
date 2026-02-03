@@ -5,6 +5,7 @@ namespace App\Controllers\Agent;
 use App\Models\Courier;
 use App\Models\CourierFile;
 use App\Models\CourierStatusHistory;
+use App\Models\Service;
 use Bow\Http\Request;
 
 class CourierController
@@ -20,9 +21,9 @@ class CourierController
         $user = $request->user();
         $search = $request->get('search');
         $status = $request->get('status');
-        
+
         $query = Courier::where('agent_id', $user->id);
-        
+
         if ($search) {
             $query->where('tracking_number', 'LIKE', "%{$search}%")
                 ->orWhere('sender_name', 'LIKE', "%{$search}%")
@@ -34,10 +35,10 @@ class CourierController
         if ($status) {
             $query->where('status', $status);
         }
-        
+
         $couriers = $query->orderBy('created_at', 'desc')->get();
         $statuses = Courier::getStatusOptions();
-        
+
         return view('agent.couriers.index', compact('couriers', 'statuses', 'search', 'status'));
     }
 
@@ -48,7 +49,8 @@ class CourierController
      */
     public function create(): string
     {
-        return view('agent.couriers.create');
+        $services = Service::where('is_active', true)->orderBy('name')->get();
+        return view('agent.couriers.create', compact('services'));
     }
 
     /**
@@ -59,17 +61,29 @@ class CourierController
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $type = $request->get('type', Courier::TYPE_INDIVIDUAL);
+
+        // Validation rules based on type
+        $rules = [
             'sender_name' => 'required|min:2|max:100',
             'sender_phone' => 'required|min:8',
             'sender_address' => 'required|min:5',
             'receiver_name' => 'required|min:2|max:100',
             'receiver_phone' => 'required|min:8',
             'receiver_address' => 'required|min:5',
-        ]);
+        ];
+
+        // Add service validation for service-to-service couriers
+        if ($type === Courier::TYPE_SERVICE) {
+            $rules['origin_service_id'] = 'required';
+            $rules['destination_service_id'] = 'required';
+        }
+
+        $request->validate($rules);
 
         $courier = new Courier();
         $courier->tracking_number = Courier::generateTrackingNumber();
+        $courier->type = $type;
         $courier->sender_name = $request->get('sender_name');
         $courier->sender_phone = $request->get('sender_phone');
         $courier->sender_address = $request->get('sender_address');
@@ -82,15 +96,27 @@ class CourierController
         $courier->status = Courier::STATUS_RECEIVED;
         $courier->agent_id = auth()->user()->id;
         $courier->notes = $request->get('notes');
+
+        // Set service fields for service-to-service couriers
+        if ($type === Courier::TYPE_SERVICE) {
+            $courier->origin_service_id = $request->get('origin_service_id');
+            $courier->destination_service_id = $request->get('destination_service_id');
+            $courier->current_service_id = $request->get('origin_service_id'); // Initially at origin
+        }
+
         $courier->save();
 
         // Create initial status history
+        $comment = $type === Courier::TYPE_SERVICE
+            ? 'Colis inter-service reçu et enregistré'
+            : 'Colis reçu et enregistré';
+
         CourierStatusHistory::create([
             'courier_id' => $courier->id,
             'changed_by' => auth()->user()->id,
             'old_status' => null,
             'new_status' => Courier::STATUS_RECEIVED,
-            'comment' => 'Colis reçu et enregistré'
+            'comment' => $comment
         ]);
 
         // Handle file uploads
@@ -109,7 +135,7 @@ class CourierController
     {
         $user = auth()->user();
         $courier = Courier::where('id', $id)->where('agent_id', $user->id)->first();
-        
+
         if (!$courier) {
             return redirect('/agent/couriers')->withFlash('error', 'Colis non trouvé');
         }
@@ -135,12 +161,14 @@ class CourierController
     {
         $user = auth()->user();
         $courier = Courier::where('id', $id)->where('agent_id', $user->id)->first();
-        
+
         if (!$courier) {
             return redirect('/agent/couriers')->withFlash('error', 'Colis non trouvé');
         }
 
-        return view('agent.couriers.edit', compact('courier'));
+        $services = Service::where('is_active', true)->orderBy('name')->get();
+
+        return view('agent.couriers.edit', compact('courier', 'services'));
     }
 
     /**
@@ -154,7 +182,7 @@ class CourierController
     {
         $user = auth()->user();
         $courier = Courier::where('id', $id)->where('agent_id', $user->id)->first();
-        
+
         if (!$courier) {
             return redirect('/agent/couriers')->withFlash('error', 'Colis non trouvé');
         }
@@ -194,7 +222,7 @@ class CourierController
     {
         $user = auth()->user();
         $courier = Courier::where('id', $id)->where('agent_id', $user->id)->first();
-        
+
         if (!$courier) {
             return redirect('/agent/couriers')->withFlash('error', 'Colis non trouvé');
         }
@@ -205,7 +233,7 @@ class CourierController
 
         $oldStatus = $courier->status;
         $newStatus = $request->get('status');
-        
+
         $courier->status = $newStatus;
         $courier->save();
 
@@ -231,7 +259,7 @@ class CourierController
     protected function handleFileUploads(Request $request, Courier $courier): void
     {
         $files = $request->file('files');
-        
+
         if (empty($files) || !is_array($files['name'])) {
             return;
         }
@@ -249,7 +277,7 @@ class CourierController
         }
 
         $fileCount = count(array_filter($files['name']));
-        
+
         // Check max files limit
         $existingCount = CourierFile::where('courier_id', $courier->id)->count();
         if ($existingCount + $fileCount > CourierFile::MAX_FILES_PER_COURIER) {
@@ -314,7 +342,7 @@ class CourierController
     {
         $user = auth()->user();
         $courier = Courier::where('id', $id)->where('agent_id', $user->id)->first();
-        
+
         if (!$courier) {
             return redirect('/agent/couriers')->withFlash('error', 'Colis non trouvé');
         }
@@ -334,15 +362,16 @@ class CourierController
      */
     public function deleteFile(Request $request, int $courierId, int $fileId)
     {
-        $user = auth()->user();
+        $user = app_auth()->user();
+
         $courier = Courier::where('id', $courierId)->where('agent_id', $user->id)->first();
-        
+
         if (!$courier) {
             return redirect('/agent/couriers')->withFlash('error', 'Colis non trouvé');
         }
 
         $file = CourierFile::where('id', $fileId)->where('courier_id', $courierId)->first();
-        
+
         if (!$file) {
             return redirect("/agent/couriers/{$courierId}")->withFlash('error', 'Fichier non trouvé');
         }
@@ -350,7 +379,7 @@ class CourierController
         // Delete physical files
         $storagePath = storage_path('couriers/' . $file->filename);
         $publicPath = public_path('storage/couriers/' . $file->filename);
-        
+
         if (file_exists($storagePath)) {
             unlink($storagePath);
         }

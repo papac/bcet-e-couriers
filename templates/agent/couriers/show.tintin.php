@@ -1,6 +1,6 @@
 %extends('layouts.app')
 
-%block('title', 'Détails colis - BCET e-Couriers')
+%block('title', 'Détails colis - BCET/COURRIER')
 
 %block('content')
 <div x-data="{ sidebarOpen: false, showStatusModal: false }" class="min-h-screen bg-gray-100">
@@ -173,7 +173,7 @@
                     <div class="flow-root">
                         <ul class="-mb-8">
                             %if(count($history) > 0)
-                                %foreach($history as $index => $item)
+                                %loop($history as $index => $item)
                                 <li>
                                     <div class="relative pb-8">
                                         %if($index < count($history) - 1)
@@ -199,7 +199,7 @@
                                         </div>
                                     </div>
                                 </li>
-                                %endforeach
+                                %endloop
                             %else
                                 <li class="text-sm text-gray-500">Aucun historique disponible</li>
                             %endif
@@ -271,7 +271,7 @@
                 <div class="p-6">
                     %if(count($files) > 0)
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        %foreach($files as $file)
+                        %loop($files as $file)
                         <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
                             <div class="flex items-start space-x-3">
                                 <div class="flex-shrink-0">
@@ -309,7 +309,7 @@
                                 </div>
                             </div>
                         </div>
-                        %endforeach
+                        %endloop
                     </div>
                     %else
                     <div class="text-center py-8 text-gray-500">
@@ -413,7 +413,7 @@ function fileUpload() {
         
         updateFileInput() {
             const dataTransfer = new DataTransfer();
-            this.files.forEach(file => dataTransfer.items.add(file));
+            this.files.loop(file => dataTransfer.items.add(file));
             document.getElementById('new_files').files = dataTransfer.files;
         }
     }

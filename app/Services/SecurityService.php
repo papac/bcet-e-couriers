@@ -18,16 +18,16 @@ class SecurityService
         if ($input === null) {
             return '';
         }
-        
+
         // Remove null bytes
         $input = str_replace(chr(0), '', $input);
-        
+
         // Strip HTML tags
         $input = strip_tags($input);
-        
+
         // Convert special characters to HTML entities
         $input = htmlspecialchars($input, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        
+
         // Trim whitespace
         return trim($input);
     }
@@ -43,7 +43,7 @@ class SecurityService
         if ($email === null) {
             return '';
         }
-        
+
         $email = trim(strtolower($email));
         return filter_var($email, FILTER_SANITIZE_EMAIL) ?: '';
     }
@@ -59,7 +59,7 @@ class SecurityService
         if ($phone === null) {
             return '';
         }
-        
+
         // Keep only digits, plus sign, and spaces
         return preg_replace('/[^0-9+\s\-]/', '', $phone);
     }
@@ -97,7 +97,7 @@ class SecurityService
         if ($tracking === null) {
             return '';
         }
-        
+
         // Allow only alphanumeric and dashes
         return preg_replace('/[^A-Za-z0-9\-]/', '', strtoupper(trim($tracking)));
     }
@@ -136,7 +136,7 @@ class SecurityService
         if ($output === null) {
             return '';
         }
-        
+
         return htmlspecialchars($output, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 }

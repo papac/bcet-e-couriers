@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers\Auth;
+namespace App\Controllers;
 
 use App\Models\User;
 use Bow\Http\Request;
@@ -14,13 +14,13 @@ class LoginController
      *
      * @return string
      */
-    public function showLoginForm(Request $request): string
+    public function __invoke(Request $request): string
     {
         if (Auth::check()) {
             return redirect($request->user()->isAdmin() ? '/admin' : '/agent');
         }
 
-        return view('auth.login');
+        return view('login');
     }
 
     /**
@@ -32,7 +32,7 @@ class LoginController
     public function login(Request $request)
     {
         $credentials = $request->only(['email', 'password']);
-        
+
         // Validate input
         $request->validate([
             'email' => 'required|email',
@@ -41,35 +41,30 @@ class LoginController
 
         // Find user
         $user = User::where('email', $credentials['email'])->first();
-        
+
         if (!$user) {
-            return redirect('/login')->withFlash('error', 'Email ou mot de passe incorrect');
+            return redirect('/')->withFlash('error', 'Email ou mot de passe incorrect');
         }
 
         // Check if user is active
         if (!$user->is_active) {
-            return redirect('/login')->withFlash('error', 'Votre compte a été désactivé');
+            return redirect('/')->withFlash('error', 'Votre compte a été désactivé');
         }
 
         // Attempt login
-        if (Auth::attempts($credentials)) {
-            // Clear rate limit on successful login
-            LoginRateLimitMiddleware::clearAttempts($request);
-            
-            $user = Auth::user();
-            
-            // Redirect based on role
-            if ($user->isAdmin()) {
-                return redirect('/admin');
-            }
-            
-            return redirect('/agent');
+        if (!app_hash($credentials['password'], $user->password)) {
+            // Increment failed attempts
+            LoginRateLimitMiddleware::incrementAttempts($request);
+
+            return redirect('/')->withFlash('error', 'Email ou mot de passe incorrect');
         }
 
-        // Increment failed attempts
-        LoginRateLimitMiddleware::incrementAttempts($request);
+        // Clear rate limit on successful login
+        LoginRateLimitMiddleware::clearAttempts($request);
 
-        return redirect('/login')->withFlash('error', 'Email ou mot de passe incorrect');
+        app_auth()->login($user);
+
+        return redirect('/');
     }
 
     /**
@@ -80,7 +75,7 @@ class LoginController
     public function logout(Request $request)
     {
         Auth::logout();
-        
-        return redirect('/login')->withFlash('success', 'Vous avez été déconnecté');
+
+        return redirect('/')->withFlash('success', 'Vous avez été déconnecté');
     }
 }

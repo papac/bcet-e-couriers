@@ -24,7 +24,7 @@ class RateLimitMiddleware
      * @param callable $next
      * @return mixed
      */
-    public function handle(Request $request, callable $next)
+    public function process(Request $request, callable $next)
     {
         $key = $this->resolveRequestSignature($request);
         $attempts = (int) Cache::get($key, 0);
@@ -36,7 +36,7 @@ class RateLimitMiddleware
             ], 429);
         }
 
-        Cache::add($key, $attempts + 1, $this->decayMinutes * 60);
+        Cache::set($key, $attempts + 1, $this->decayMinutes * 60);
 
         $response = $next($request);
 
@@ -53,7 +53,7 @@ class RateLimitMiddleware
     {
         $ip = $request->ip() ?? 'unknown';
         $route = $request->url();
-        
+
         return 'rate_limit:' . sha1($ip . '|' . $route);
     }
 }

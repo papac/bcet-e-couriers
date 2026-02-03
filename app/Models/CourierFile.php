@@ -97,13 +97,13 @@ class CourierFile extends Model
     public function getFormattedSize(): string
     {
         $bytes = $this->size;
-        
+
         if ($bytes >= 1048576) {
             return number_format($bytes / 1048576, 2) . ' MB';
         } elseif ($bytes >= 1024) {
             return number_format($bytes / 1024, 2) . ' KB';
         }
-        
+
         return $bytes . ' bytes';
     }
 
@@ -137,19 +137,19 @@ class CourierFile extends Model
         if ($this->isImage()) {
             return 'image';
         }
-        
+
         if ($this->isPdf()) {
             return 'pdf';
         }
-        
+
         if (str_contains($this->mime_type, 'word')) {
             return 'word';
         }
-        
+
         if (str_contains($this->mime_type, 'excel') || str_contains($this->mime_type, 'spreadsheet')) {
             return 'excel';
         }
-        
+
         return 'file';
     }
 
@@ -184,7 +184,7 @@ class CourierFile extends Model
         // Check MIME type
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
         $mimeType = $finfo->file($file['tmp_name']);
-        
+
         if (!in_array($mimeType, self::ALLOWED_MIME_TYPES)) {
             return ['error' => 'Type de fichier non autorisé'];
         }

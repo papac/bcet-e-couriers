@@ -19,6 +19,10 @@ use Bow\Database\Barry\Model;
  * @property string $status
  * @property int $agent_id
  * @property string $notes
+ * @property string $courier_type
+ * @property int $origin_service_id
+ * @property int $destination_service_id
+ * @property int $current_service_id
  * @property string $created_at
  * @property string $updated_at
  */
@@ -49,7 +53,11 @@ class Courier extends Model
         'price',
         'status',
         'agent_id',
-        'notes'
+        'notes',
+        'courier_type',
+        'origin_service_id',
+        'destination_service_id',
+        'current_service_id'
     ];
 
     /**
@@ -60,6 +68,12 @@ class Courier extends Model
     const STATUS_IN_TRANSIT = 'in_transit';
     const STATUS_DELIVERED = 'delivered';
     const STATUS_RETURNED = 'returned';
+
+    /**
+     * Courier type constants
+     */
+    const TYPE_INDIVIDUAL = 'individual';
+    const TYPE_SERVICE = 'service';
 
     /**
      * Get all status options
@@ -87,7 +101,7 @@ class Courier extends Model
         $prefix = 'BCT';
         $date = date('Ymd');
         $random = strtoupper(substr(md5(uniqid()), 0, 6));
-        
+
         return "{$prefix}-{$date}-{$random}";
     }
 
@@ -138,7 +152,7 @@ class Courier extends Model
      */
     public function getStatusColor(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             self::STATUS_PENDING => 'yellow',
             self::STATUS_RECEIVED => 'blue',
             self::STATUS_IN_TRANSIT => 'purple',
@@ -146,5 +160,90 @@ class Courier extends Model
             self::STATUS_RETURNED => 'red',
             default => 'gray'
         };
+    }
+
+    /**
+     * Get courier type options
+     *
+     * @return array
+     */
+    public static function getCourierTypeOptions(): array
+    {
+        return [
+            self::TYPE_INDIVIDUAL => 'Individuel (Expéditeur → Destinataire)',
+            self::TYPE_SERVICE => 'Inter-service (Service → Service)'
+        ];
+    }
+
+    /**
+     * Get the origin service
+     *
+     * @return \Bow\Database\Barry\Relations\BelongsTo
+     */
+    public function originService()
+    {
+        return $this->belongsTo(Service::class, 'origin_service_id');
+    }
+
+    /**
+     * Get the destination service
+     *
+     * @return \Bow\Database\Barry\Relations\BelongsTo
+     */
+    public function destinationService()
+    {
+        return $this->belongsTo(Service::class, 'destination_service_id');
+    }
+
+    /**
+     * Get the current service (where courier is located)
+     *
+     * @return \Bow\Database\Barry\Relations\BelongsTo
+     */
+    public function currentService()
+    {
+        return $this->belongsTo(Service::class, 'current_service_id');
+    }
+
+    /**
+     * Check if this is a service-to-service courier
+     *
+     * @return bool
+     */
+    public function isServiceToService(): bool
+    {
+        return $this->courier_type === self::TYPE_SERVICE;
+    }
+
+    /**
+     * Check if this is an individual courier
+     *
+     * @return bool
+     */
+    public function isIndividual(): bool
+    {
+        return $this->courier_type === self::TYPE_INDIVIDUAL;
+    }
+
+    /**
+     * Get courier type label
+     *
+     * @return string
+     */
+    public function getCourierTypeLabel(): string
+    {
+        return $this->isServiceToService() ? 'Inter-service' : 'Individuel';
+    }
+
+    /**
+     * Transfer courier to another service
+     *
+     * @param int $serviceId
+     * @return void
+     */
+    public function transferToService(int $serviceId): void
+    {
+        $this->current_service_id = $serviceId;
+        $this->save();
     }
 }

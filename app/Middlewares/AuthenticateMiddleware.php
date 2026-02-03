@@ -13,6 +13,6 @@ class AuthenticateMiddleware extends AuthMiddleware
      */
     public function redirectTo(): string
     {
-        return '/login';
+        return '/';
     }
 }

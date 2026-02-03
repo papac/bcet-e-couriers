@@ -24,16 +24,16 @@ class LoginRateLimitMiddleware
      * @param callable $next
      * @return mixed
      */
-    public function handle(Request $request, callable $next)
+    public function process(Request $request, callable $next)
     {
         $key = $this->getThrottleKey($request);
         $attempts = (int) Cache::get($key, 0);
 
         if ($attempts >= $this->maxAttempts) {
             $remainingTime = Cache::get($key . ':lockout_time', 0);
-            
+
             return redirect('/login')->withFlash(
-                'error', 
+                'error',
                 "Trop de tentatives de connexion. Veuillez réessayer dans {$this->lockoutMinutes} minutes."
             );
         }
@@ -53,9 +53,9 @@ class LoginRateLimitMiddleware
     {
         $key = self::staticGetThrottleKey($request);
         $attempts = (int) Cache::get($key, 0);
-        
-        Cache::add($key, $attempts + 1, 15 * 60); // 15 minutes
-        Cache::add($key . ':lockout_time', time() + (15 * 60), 15 * 60);
+
+        Cache::set($key, $attempts + 1, 15 * 60); // 15 minutes
+        Cache::set($key . ':lockout_time', time() + (15 * 60), 15 * 60);
     }
 
     /**
@@ -92,7 +92,7 @@ class LoginRateLimitMiddleware
     {
         $ip = $request->ip() ?? 'unknown';
         $email = strtolower($request->get('email', ''));
-        
+
         return 'login_attempts:' . sha1($ip . '|' . $email);
     }
 }

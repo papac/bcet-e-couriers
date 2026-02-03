@@ -1,6 +1,6 @@
 %extends('layouts.app')
 
-%block('title', 'Nouveau colis - BCET e-Couriers')
+%block('title', 'Nouveau colis - BCET/COURRIER')
 
 %block('content')
 <div x-data="{ sidebarOpen: false }" class="min-h-screen bg-gray-100">
@@ -48,8 +48,105 @@
             </div>
             %endif
 
-            <form action="/agent/couriers" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <form action="/agent/couriers" method="POST" enctype="multipart/form-data" class="space-y-6" x-data="courierForm()">
                 {{ csrf_field() }}
+                
+                <!-- Courier Type Selection -->
+                <div class="bg-white shadow rounded-xl">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                            </svg>
+                            Type de colis
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label class="relative flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all"
+                                :class="type === 'individual' ? 'border-primary-500 bg-primary-50' : 'border-gray-200 hover:border-gray-300'">
+                                <input type="radio" name="type" value="individual" x-model="type" class="sr-only">
+                                <div class="flex items-center">
+                                    <div class="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                                        <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-900">Colis individuel</p>
+                                        <p class="text-xs text-gray-500">Envoi d'un particulier vers un autre particulier</p>
+                                    </div>
+                                </div>
+                                <div x-show="type === 'individual'" class="absolute top-2 right-2">
+                                    <svg class="h-5 w-5 text-primary-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </label>
+                            
+                            <label class="relative flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all"
+                                :class="type === 'service' ? 'border-primary-500 bg-primary-50' : 'border-gray-200 hover:border-gray-300'">
+                                <input type="radio" name="type" value="service" x-model="type" class="sr-only">
+                                <div class="flex items-center">
+                                    <div class="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                                        <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-900">Service à service</p>
+                                        <p class="text-xs text-gray-500">Transfert entre agences/services</p>
+                                    </div>
+                                </div>
+                                <div x-show="type === 'service'" class="absolute top-2 right-2">
+                                    <svg class="h-5 w-5 text-primary-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Service Selection (shown only for service-to-service) -->
+                        <div x-show="type === 'service'" x-transition class="mt-6 p-4 bg-gray-50 rounded-lg">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="origin_service_id" class="block text-sm font-medium text-gray-700 mb-1">
+                                        <span class="flex items-center">
+                                            <svg class="h-4 w-4 mr-1 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            </svg>
+                                            Service d'origine *
+                                        </span>
+                                    </label>
+                                    <select name="origin_service_id" id="origin_service_id" x-bind:required="type === 'service'"
+                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                        <option value="">Sélectionnez un service</option>
+                                        %loop($services as $service)
+                                        <option value="{{ $service->id }}">{{ $service->name }} ({{ $service->city }})</option>
+                                        %endloop
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="destination_service_id" class="block text-sm font-medium text-gray-700 mb-1">
+                                        <span class="flex items-center">
+                                            <svg class="h-4 w-4 mr-1 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            </svg>
+                                            Service de destination *
+                                        </span>
+                                    </label>
+                                    <select name="destination_service_id" id="destination_service_id" x-bind:required="type === 'service'"
+                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                        <option value="">Sélectionnez un service</option>
+                                        %loop($services as $service)
+                                        <option value="{{ $service->id }}">{{ $service->name }} ({{ $service->city }})</option>
+                                        %endloop
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Sender Information -->
@@ -240,6 +337,12 @@
 </div>
 
 <script>
+function courierForm() {
+    return {
+        type: 'individual'
+    }
+}
+
 function fileUpload() {
     return {
         files: [],
@@ -286,7 +389,7 @@ function fileUpload() {
         
         updateFileInput() {
             const dataTransfer = new DataTransfer();
-            this.files.forEach(file => dataTransfer.items.add(file));
+            this.files.loop(file => dataTransfer.items.add(file));
             document.getElementById('files').files = dataTransfer.files;
         },
         

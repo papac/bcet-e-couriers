@@ -1,6 +1,6 @@
 %extends('layouts.app')
 
-%block('title', 'Gestion des agents - BCET e-Couriers')
+%block('title', 'Gestion des agents - BCET/COURRIER')
 
 %block('content')
 <div x-data="{ sidebarOpen: false }" class="min-h-screen bg-gray-100">
@@ -86,7 +86,7 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             %if(count($agents) > 0)
-                                %foreach($agents as $agent)
+                                %loop($agents as $agent)
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
@@ -134,7 +134,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                                %endforeach
+                                %endloop
                             %else
                                 <tr>
                                     <td colspan="5" class="px-6 py-12 text-center text-gray-500">

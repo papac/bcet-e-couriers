@@ -38,16 +38,16 @@ class ApplicationConfiguration extends Configuration
     {
         // Prevent MIME type sniffing
         header('X-Content-Type-Options: nosniff');
-        
+
         // Enable XSS protection
         header('X-XSS-Protection: 1; mode=block');
-        
+
         // Prevent clickjacking
         header('X-Frame-Options: SAMEORIGIN');
-        
+
         // Referrer Policy
         header('Referrer-Policy: strict-origin-when-cross-origin');
-        
+
         // Permissions Policy
         header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
     }

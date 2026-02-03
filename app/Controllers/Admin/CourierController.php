@@ -21,7 +21,7 @@ class CourierController
         $search = $request->get('search');
         $status = $request->get('status');
         $agent_id = $request->get('agent_id');
-        
+
         $query = Courier::query();
 
         if ($search) {
@@ -31,19 +31,19 @@ class CourierController
                 ->orWhere('sender_phone', 'LIKE', "%{$search}%")
                 ->orWhere('receiver_phone', 'LIKE', "%{$search}%");
         }
-        
+
         if ($status) {
             $query->where('status', $status);
         }
-        
+
         if ($agent_id) {
             $query->where('agent_id', $agent_id);
         }
-        
+
         $couriers = $query->orderBy('created_at', 'desc')->get();
         $agents = User::where('role', 'agent')->get();
         $statuses = Courier::getStatusOptions();
-        
+
         return view('admin.couriers.index', compact('couriers', 'agents', 'statuses', 'search', 'status', 'agent_id'));
     }
 
@@ -56,7 +56,7 @@ class CourierController
     public function show(int $id): string
     {
         $courier = Courier::find($id);
-        
+
         if (!$courier) {
             return redirect('/admin/couriers')->withFlash('error', 'Colis non trouvé');
         }
@@ -82,7 +82,7 @@ class CourierController
     public function updateStatus(Request $request, int $id)
     {
         $courier = Courier::find($id);
-        
+
         if (!$courier) {
             return redirect('/admin/couriers')->withFlash('error', 'Colis non trouvé');
         }
@@ -93,7 +93,7 @@ class CourierController
 
         $oldStatus = $courier->status;
         $newStatus = $request->get('status');
-        
+
         $courier->status = $newStatus;
         $courier->save();
 

@@ -13,36 +13,27 @@ class Version20260202100001CreateCouriersTable extends Migration
         $this->create("couriers", function (Table $table) {
             $table->addIncrement('id');
             $table->addString('tracking_number', ['unique' => true]);
-            
-            // Sender information
+            $table->addInteger('agent_id', ['nullable' => true]);
             $table->addString('sender_name');
             $table->addString('sender_phone');
             $table->addText('sender_address');
-            
-            // Receiver information
             $table->addString('receiver_name');
             $table->addString('receiver_phone');
             $table->addText('receiver_address');
-            
-            // Package details
             $table->addString('description', ['nullable' => true]);
-            $table->addFloat('weight', ['nullable' => true]);
-            $table->addFloat('price', ['nullable' => true]);
-            
-            // Status
-            $table->addEnum('status', ['size' => ['pending', 'received', 'in_transit', 'delivered', 'returned'], 'default' => 'pending']);
-            
-            // Relations
+            $table->addDouble('weight', ['nullable' => true]);
+            $table->addDouble('price', ['nullable' => true]);
+            $table->addColumn('status', 'enum', [
+                'size' => ['pending', 'received', 'in_transit', 'delivered', 'returned'],
+                'default' => 'pending'
+            ]);
+            $table->addString('notes', ['nullable' => true]);
             $table->addForeign('agent_id', [
                 'table' => 'users',
-                'column' => 'id',
-                'onDelete' => 'CASCADE'
+                'references' => 'id',
+                'on' => 'delete set null',
             ]);
-            
-            $table->addString('notes', ['nullable' => true]);
             $table->addTimestamps();
-            
-            $table->withEngine('InnoDB');
         });
     }
 
