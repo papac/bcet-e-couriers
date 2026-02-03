@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Enums\AppAccess;
 use App\Models\User;
 use App\Models\Service;
 use Bow\Http\Request;
@@ -79,7 +80,7 @@ class UserController
         if (is_array($appAccess)) {
             $user->app_access = implode(',', $appAccess);
         } else {
-            $user->app_access = $appAccess ?: User::APP_COURRIER;
+            $user->app_access = $appAccess ?: AppAccess::COURRIER->value;
         }
 
         $user->persist();

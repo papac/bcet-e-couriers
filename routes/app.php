@@ -13,24 +13,40 @@ $router->middleware(['guest', 'csrf', 'login.limit'])
 
 $router->middleware(['auth:web'])->get('/logout', [LoginController::class, 'logout'])->name('auth.logout');
 
-// App routes (authenticated users - both admin and agent)
+// App routes (authenticated users)
 $router->middleware(['auth:web'])->prefix('/app', function () use ($router) {
-    // Dashboard
+    // Dashboard - app selection
     $router->get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Courier management (all authenticated users)
-    $router->get('/couriers', [CourierController::class, 'index'])->name('couriers.index');
-    $router->get('/couriers/create', [CourierController::class, 'create'])->name('couriers.create');
-    $router->post('/couriers', [CourierController::class, 'store'])->name('couriers.store');
-    $router->get('/couriers/:id', [CourierController::class, 'show'])->name('couriers.show');
-    $router->get('/couriers/:id/edit', [CourierController::class, 'edit'])->name('couriers.edit');
-    $router->put('/couriers/:id', [CourierController::class, 'update'])->name('couriers.update');
-    $router->put('/couriers/:id/status', [CourierController::class, 'updateStatus'])->name('couriers.status');
+    // ============================================
+    // COURRIER APP - /app/couriers
+    // ============================================
+    $router->middleware(['app.access:courrier'])->prefix('/couriers', function () use ($router) {
+        // Courier dashboard
+        $router->get('/', [CourierController::class, 'index'])->name('couriers.index');
+        $router->get('/create', [CourierController::class, 'create'])->name('couriers.create');
+        $router->post('/', [CourierController::class, 'store'])->name('couriers.store');
+        $router->get('/:id', [CourierController::class, 'show'])->name('couriers.show');
+        $router->get('/:id/edit', [CourierController::class, 'edit'])->name('couriers.edit');
+        $router->put('/:id', [CourierController::class, 'update'])->name('couriers.update');
+        $router->put('/:id/status', [CourierController::class, 'updateStatus'])->name('couriers.status');
 
-    // File management
-    $router->post('/couriers/:id/files', [CourierController::class, 'uploadFiles'])->name('couriers.files.upload');
-    $router->delete('/couriers/:courierId/files/:fileId', [CourierController::class, 'deleteFile'])->name('couriers.files.delete');
+        // File management
+        $router->post('/:id/files', [CourierController::class, 'uploadFiles'])->name('couriers.files.upload');
+        $router->delete('/:courierId/files/:fileId', [CourierController::class, 'deleteFile'])->name('couriers.files.delete');
+    });
 
+    // ============================================
+    // RECOUVREMENT APP - /app/recouvrements
+    // ============================================
+    $router->middleware(['app.access:recouvrement'])->prefix('/recouvrements', function () use ($router) {
+        // Placeholder for recouvrement routes
+        // $router->get('/', [RecouvrementController::class, 'index'])->name('recouvrements.index');
+    });
+
+    // ============================================
+    // ADMIN ONLY - User & Service Management
+    // ============================================
     // User management (admin only)
     $router->middleware(['admin'])->prefix('/users', function () use ($router) {
         $router->get('/', [UserController::class, 'index'])->name('users.index');

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AppAccess;
 use Bow\Auth\Authentication as AuthenticationModel;
 
 /**
@@ -19,13 +20,6 @@ use Bow\Auth\Authentication as AuthenticationModel;
  */
 class User extends AuthenticationModel
 {
-    /**
-     * Available applications
-     */
-    public const APP_COURRIER = 'courrier';
-    public const APP_E_RECOUVREMENT = 'e_recouvrement';
-    public const APP_OTHER = 'other';
-
     /**
      * The table name
      *
@@ -81,17 +75,18 @@ class User extends AuthenticationModel
     /**
      * Check if user has access to a specific app
      *
-     * @param string $app
+     * @param AppAccess|string $app
      * @return bool
      */
-    public function hasAppAccess(string $app): bool
+    public function hasAppAccess(AppAccess|string $app): bool
     {
         if ($this->isAdmin()) {
             return true; // Admin has access to all apps
         }
 
+        $appValue = $app instanceof AppAccess ? $app->value : $app;
         $apps = $this->getAppAccessList();
-        return in_array($app, $apps);
+        return in_array($appValue, $apps);
     }
 
     /**
@@ -101,7 +96,7 @@ class User extends AuthenticationModel
      */
     public function hasCourierAccess(): bool
     {
-        return $this->hasAppAccess(self::APP_COURRIER);
+        return $this->hasAppAccess(AppAccess::COURRIER);
     }
 
     /**
@@ -113,7 +108,7 @@ class User extends AuthenticationModel
     {
         // Admin has access to all apps
         if ($this->isAdmin()) {
-            return array_keys(self::getAvailableApps());
+            return AppAccess::values();
         }
 
         if (empty($this->app_access)) {
@@ -141,11 +136,7 @@ class User extends AuthenticationModel
      */
     public static function getAvailableApps(): array
     {
-        return [
-            self::APP_COURRIER => 'Courrier',
-            self::APP_E_RECOUVREMENT => 'E-Recouvrement',
-            self::APP_OTHER => 'Autre Application',
-        ];
+        return AppAccess::toArray();
     }
 
     /**
