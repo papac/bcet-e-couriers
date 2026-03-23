@@ -36,13 +36,23 @@ class CourierController
     }
 
     /**
-     * Show create courier form
+     * Show create form for incoming courier (Réception)
      *
      * @return string
      */
-    public function create(): string
+    public function createIncoming(): string
     {
-        return $this->getController()->create();
+        return $this->getController()->createIncoming();
+    }
+
+    /**
+     * Show create form for outgoing courier (Départ)
+     *
+     * @return string
+     */
+    public function createOutgoing(): string
+    {
+        return $this->getController()->createOutgoing();
     }
 
     /**

@@ -1,6 +1,6 @@
 %extends('layouts.app')
 
-%block('title', 'Gestion des utilisateurs - BCET/COURRIER')
+%block('title', 'Gestion des utilisateurs - BCET/COURIERS')
 
 %block('content')
 <div x-data="{ mobileMenuOpen: false }" class="min-h-screen bg-gray-100">
@@ -85,8 +85,8 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex flex-wrap gap-1">
                                         %loop($user->getAppAccessList() as $app)
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $app === 'courrier' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' }}">
-                                            %if($app === 'courrier')
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $app === 'couriers' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' }}">
+                                            %if($app === 'couriers')
                                             <svg class="mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                             </svg>

@@ -1,6 +1,6 @@
 %extends('layouts.app')
 
-%block('title', 'Suivi colis ' . $courier->tracking_number . ' - BCET/COURRIER')
+%block('title', 'Suivi colis ' . $courier->tracking_number . ' - BCET/COURIERS')
 
 %block('content')
 <div class="min-h-screen bg-gradient-to-br from-primary-600 to-primary-900">
@@ -13,7 +13,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
                 </div>
-                <span class="text-xl font-bold text-white">BCET/COURRIER</span>
+                <span class="text-xl font-bold text-white">BCET/COURIERS</span>
             </a>
             <a href="/login" class="px-6 py-2.5 bg-white text-primary-600 rounded-lg font-medium hover:bg-gray-100 transition">
                 Se connecter
@@ -203,7 +203,7 @@
     <!-- Footer -->
     <div class="border-t border-white/10 py-8 mt-12">
         <div class="max-w-7xl mx-auto px-6 text-center text-primary-200">
-            <p>© {{ date('Y') }} BCET/COURRIER. Tous droits réservés.</p>
+            <p>© {{ date('Y') }} BCET/COURIERS. Tous droits réservés.</p>
         </div>
     </div>
 </div>

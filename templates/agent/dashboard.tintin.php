@@ -1,6 +1,6 @@
 %extends('layouts.app')
 
-%block('title', 'Dashboard Agent - BCET/COURRIER')
+%block('title', 'Dashboard Agent - BCET/COURIERS')
 
 %block('content')
 <div x-data="{ mobileMenuOpen: false }" class="min-h-screen bg-gray-100">
@@ -17,7 +17,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                             </svg>
                         </div>
-                        <span class="ml-3 text-lg font-bold text-white">BCET/COURRIER</span>
+                        <span class="ml-3 text-lg font-bold text-white">BCET/COURIERS</span>
                     </div>
                     <!-- Desktop Navigation -->
                     <div class="hidden md:ml-8 md:flex md:space-x-4">

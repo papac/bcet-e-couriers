@@ -96,7 +96,7 @@ class User extends AuthenticationModel
      */
     public function hasCourierAccess(): bool
     {
-        return $this->hasAppAccess(AppAccess::COURRIER);
+        return $this->hasAppAccess(AppAccess::COURIERS);
     }
 
     /**

@@ -11,8 +11,8 @@ class Version20260203100000AddAccessPermissionsToUsersTable extends Migration
     public function up(): void
     {
         $this->alter("users", function (Table $table) {
-            // App access - stores comma-separated app names (e.g., 'courrier', 'courrier,other_app')
-            $table->addString('app_access', ['default' => 'courrier']);
+            // App access - stores comma-separated app names (e.g., 'couriers', 'couriers,other_app')
+            $table->addString('app_access', ['default' => 'couriers']);
         });
     }
 

@@ -19,12 +19,19 @@ $router->middleware(['auth:web'])->prefix('/app', function () use ($router) {
     $router->get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // ============================================
-    // COURRIER APP - /app/couriers
+    // COURIERS APP - /app/couriers
     // ============================================
-    $router->middleware(['app.access:courrier'])->prefix('/couriers', function () use ($router) {
-        // Courier dashboard
+    $router->middleware(['app.access:couriers'])->prefix('/couriers', function () use ($router) {
+        // Courier list
         $router->get('/', [CourierController::class, 'index'])->name('couriers.index');
-        $router->get('/create', [CourierController::class, 'create'])->name('couriers.create');
+
+        // Réception de courrier (incoming)
+        $router->get('/incoming/create', [CourierController::class, 'createIncoming'])->name('couriers.incoming.create');
+
+        // Départ de courrier (outgoing)
+        $router->get('/outgoing/create', [CourierController::class, 'createOutgoing'])->name('couriers.outgoing.create');
+
+        // Common CRUD routes
         $router->post('/', [CourierController::class, 'store'])->name('couriers.store');
         $router->get('/:id', [CourierController::class, 'show'])->name('couriers.show');
         $router->get('/:id/edit', [CourierController::class, 'edit'])->name('couriers.edit');
@@ -37,11 +44,11 @@ $router->middleware(['auth:web'])->prefix('/app', function () use ($router) {
     });
 
     // ============================================
-    // RECOUVREMENT APP - /app/recouvrements
+    // RECOVERIES APP - /app/recoveries
     // ============================================
-    $router->middleware(['app.access:recouvrement'])->prefix('/recouvrements', function () use ($router) {
-        // Placeholder for recouvrement routes
-        // $router->get('/', [RecouvrementController::class, 'index'])->name('recouvrements.index');
+    $router->middleware(['app.access:recoveries'])->prefix('/recoveries', function () use ($router) {
+        // Placeholder for recoveries routes
+        // $router->get('/', [RecouvrementController::class, 'index'])->name('recoveries.index');
     });
 
     // ============================================

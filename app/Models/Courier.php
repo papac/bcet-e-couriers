@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\CourierDirection;
 use Bow\Database\Barry\Model;
 
 /**
@@ -17,6 +18,7 @@ use Bow\Database\Barry\Model;
  * @property float $weight
  * @property float $price
  * @property string $status
+ * @property string $direction
  * @property int $agent_id
  * @property string $notes
  * @property string $courier_type
@@ -52,6 +54,7 @@ class Courier extends Model
         'weight',
         'price',
         'status',
+        'direction',
         'agent_id',
         'notes',
         'courier_type',
@@ -160,6 +163,66 @@ class Courier extends Model
             self::STATUS_RETURNED => 'red',
             default => 'gray'
         };
+    }
+
+    /**
+     * Get direction enum
+     *
+     * @return CourierDirection|null
+     */
+    public function getDirection(): ?CourierDirection
+    {
+        return CourierDirection::tryFrom($this->direction);
+    }
+
+    /**
+     * Get direction label
+     *
+     * @return string
+     */
+    public function getDirectionLabel(): string
+    {
+        return $this->getDirection()?->label() ?? 'Inconnu';
+    }
+
+    /**
+     * Get direction color class for UI
+     *
+     * @return string
+     */
+    public function getDirectionColorClass(): string
+    {
+        return $this->getDirection()?->colorClass() ?? 'bg-gray-100 text-gray-800';
+    }
+
+    /**
+     * Check if courier is incoming (reception)
+     *
+     * @return bool
+     */
+    public function isIncoming(): bool
+    {
+        return $this->direction === CourierDirection::INCOMING->value;
+    }
+
+    /**
+     * Check if courier is outgoing (depart)
+     *
+     * @return bool
+     */
+    public function isOutgoing(): bool
+    {
+        return $this->direction === CourierDirection::OUTGOING->value;
+    }
+
+    /**
+     * Get available direction options
+     *
+     * @return array
+     */
+    public static function getDirectionOptions(): array
+    {
+        return CourierDirection::toArray();
     }
 
     /**

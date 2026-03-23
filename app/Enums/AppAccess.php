@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum AppAccess: string
 {
-    case COURRIER = 'courrier';
-    case RECOUVREMENT = 'recouvrement';
+    case COURIERS = 'couriers';
+    case RECOVERIES = 'recoveries';
 
     /**
      * Get the label for the app
@@ -15,8 +15,8 @@ enum AppAccess: string
     public function label(): string
     {
         return match ($this) {
-            self::COURRIER => 'Courrier',
-            self::RECOUVREMENT => 'Recouvrement',
+            self::COURIERS => 'Courrier',
+            self::RECOVERIES => 'Recouvrement',
         };
     }
 

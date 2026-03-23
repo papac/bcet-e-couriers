@@ -1,6 +1,6 @@
 %extends('layouts.app')
 
-%block('title', 'Connexion - BCET/COURRIER')
+%block('title', 'Connexion - BCET/COURIERS')
 
 %block('content')
 <div class="min-h-screen flex bg-gradient-to-br from-primary-600 to-primary-900">
@@ -14,13 +14,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
                 </div>
-                <h1 class="mt-4 text-2xl font-bold text-white">BCET/COURRIER</h1>
+                <h1 class="mt-4 text-2xl font-bold text-white">BCET/COURIERS</h1>
             </div>
 
             <!-- Login Card -->
             <div class="bg-white rounded-2xl shadow-2xl p-8">
                 <h2 class="text-2xl font-bold text-gray-900 mb-2">Connexion</h2>
-                <p class="text-gray-500 mb-6">Accédez à votre espace de gestion du courrier</p>
+                <p class="text-gray-500 mb-6">Accédez à votre espace de gestion du couriers</p>
                 
                 %if(flash('error'))
                     <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
@@ -67,7 +67,7 @@
             <!-- Footer -->
             <div class="mt-6 text-center">
                 <p class="text-primary-200 text-sm">
-                    © {{ date('Y') }} BCET/COURRIER — Usage interne
+                    © {{ date('Y') }} BCET/COURIERS — Usage interne
                 </p>
             </div>
         </div>
@@ -83,9 +83,9 @@
                 </svg>
             </div>
 
-            <h1 class="text-4xl font-bold text-white mb-4">BCET/COURRIER</h1>
+            <h1 class="text-4xl font-bold text-white mb-4">BCET/COURIERS</h1>
             <p class="text-xl text-primary-100 mb-8">
-                Gestion du courrier reçu
+                Gestion du couriers reçu
             </p>
 
             <div class="text-left space-y-6">
@@ -98,7 +98,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-semibold text-white">Recherche rapide</h3>
-                        <p class="text-primary-200 text-sm">Retrouvez instantanément n'importe quel courrier grâce au numéro de référence unique.</p>
+                        <p class="text-primary-200 text-sm">Retrouvez instantanément n'importe quel couriers grâce au numéro de référence unique.</p>
                     </div>
                 </div>
 
@@ -111,7 +111,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-semibold text-white">Multi-services</h3>
-                        <p class="text-primary-200 text-sm">Gérez les courriers de plusieurs services et transférez facilement entre agences.</p>
+                        <p class="text-primary-200 text-sm">Gérez les courierss de plusieurs services et transférez facilement entre agences.</p>
                     </div>
                 </div>
 
@@ -124,7 +124,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-semibold text-white">Historique complet</h3>
-                        <p class="text-primary-200 text-sm">Conservez l'historique de tous les courriers reçus avec leurs pièces jointes.</p>
+                        <p class="text-primary-200 text-sm">Conservez l'historique de tous les courierss reçus avec leurs pièces jointes.</p>
                     </div>
                 </div>
             </div>

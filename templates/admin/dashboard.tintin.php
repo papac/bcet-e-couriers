@@ -1,6 +1,6 @@
 %extends('layouts.app')
 
-%block('title', 'Dashboard Admin - BCET/COURRIER')
+%block('title', 'Dashboard Admin - BCET/COURIERS')
 
 %block('content')
 <div x-data="{ mobileMenuOpen: false, userMenuOpen: false }" class="min-h-screen bg-gray-100">
@@ -17,7 +17,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                             </svg>
                         </div>
-                        <span class="ml-3 text-lg font-bold text-white">BCET/COURRIER</span>
+                        <span class="ml-3 text-lg font-bold text-white">BCET/COURIERS</span>
                     </div>
                     <!-- Desktop Navigation -->
                     <div class="hidden md:ml-8 md:flex md:space-x-4">
@@ -125,7 +125,169 @@
             </div>
             %endif
 
-            <!-- Stats Grid -->
+            <!-- Quick Actions -->
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Actions rapides</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Réception de courrier -->
+                    <a href="{{ route('couriers.incoming.create') }}" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl p-6 shadow-lg transition-all duration-200 transform hover:scale-[1.02]">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-white/20 rounded-lg">
+                                <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-xl font-bold">Réception de courrier</h3>
+                                <p class="text-green-100 text-sm">Enregistrer un courrier entrant</p>
+                            </div>
+                        </div>
+                    </a>
+                    <!-- Départ de courrier -->
+                    <a href="{{ route('couriers.outgoing.create') }}" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl p-6 shadow-lg transition-all duration-200 transform hover:scale-[1.02]">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-white/20 rounded-lg">
+                                <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-xl font-bold">Départ de courrier</h3>
+                                <p class="text-blue-100 text-sm">Enregistrer un courrier sortant</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Today's Stats -->
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Aujourd'hui</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Réceptions aujourd'hui</p>
+                                <p class="text-3xl font-bold text-green-600">{{ $todayStats['incoming'] }}</p>
+                            </div>
+                            <div class="p-3 bg-green-100 rounded-full">
+                                <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Départs aujourd'hui</p>
+                                <p class="text-3xl font-bold text-blue-600">{{ $todayStats['outgoing'] }}</p>
+                            </div>
+                            <div class="p-3 bg-blue-100 rounded-full">
+                                <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direction Stats -->
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Statistiques par direction</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Incoming Stats -->
+                    <div class="bg-white rounded-xl shadow overflow-hidden">
+                        <div class="px-6 py-4 bg-green-50 border-b border-green-100">
+                            <div class="flex items-center">
+                                <svg class="h-5 w-5 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                                </svg>
+                                <h3 class="text-lg font-semibold text-green-800">Réception de courrier</h3>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                    <p class="text-2xl font-bold text-gray-900">{{ $directionStats['incoming']['total'] }}</p>
+                                    <p class="text-sm text-gray-500">Total</p>
+                                </div>
+                                <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                                    <p class="text-2xl font-bold text-yellow-600">{{ $directionStats['incoming']['pending'] }}</p>
+                                    <p class="text-sm text-gray-500">En attente</p>
+                                </div>
+                                <div class="text-center p-4 bg-purple-50 rounded-lg">
+                                    <p class="text-2xl font-bold text-purple-600">{{ $directionStats['incoming']['in_transit'] }}</p>
+                                    <p class="text-sm text-gray-500">En transit</p>
+                                </div>
+                                <div class="text-center p-4 bg-green-50 rounded-lg">
+                                    <p class="text-2xl font-bold text-green-600">{{ $directionStats['incoming']['delivered'] }}</p>
+                                    <p class="text-sm text-gray-500">Livrés</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Outgoing Stats -->
+                    <div class="bg-white rounded-xl shadow overflow-hidden">
+                        <div class="px-6 py-4 bg-blue-50 border-b border-blue-100">
+                            <div class="flex items-center">
+                                <svg class="h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                </svg>
+                                <h3 class="text-lg font-semibold text-blue-800">Départ de courrier</h3>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                    <p class="text-2xl font-bold text-gray-900">{{ $directionStats['outgoing']['total'] }}</p>
+                                    <p class="text-sm text-gray-500">Total</p>
+                                </div>
+                                <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                                    <p class="text-2xl font-bold text-yellow-600">{{ $directionStats['outgoing']['pending'] }}</p>
+                                    <p class="text-sm text-gray-500">En attente</p>
+                                </div>
+                                <div class="text-center p-4 bg-purple-50 rounded-lg">
+                                    <p class="text-2xl font-bold text-purple-600">{{ $directionStats['outgoing']['in_transit'] }}</p>
+                                    <p class="text-sm text-gray-500">En transit</p>
+                                </div>
+                                <div class="text-center p-4 bg-green-50 rounded-lg">
+                                    <p class="text-2xl font-bold text-green-600">{{ $directionStats['outgoing']['delivered'] }}</p>
+                                    <p class="text-sm text-gray-500">Livrés</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Stats -->
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Ce mois-ci</h2>
+                <div class="bg-white rounded-xl shadow p-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div class="text-center">
+                            <p class="text-3xl font-bold text-green-600">{{ $monthStats['incoming'] }}</p>
+                            <p class="text-sm text-gray-500">Réceptions</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-3xl font-bold text-blue-600">{{ $monthStats['outgoing'] }}</p>
+                            <p class="text-sm text-gray-500">Départs</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-3xl font-bold text-gray-900">{{ $monthStats['incoming'] + $monthStats['outgoing'] }}</p>
+                            <p class="text-sm text-gray-500">Total</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-3xl font-bold text-purple-600">{{ $stats['active_agents'] }}</p>
+                            <p class="text-sm text-gray-500">Agents actifs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- General Stats Grid -->
             <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
                 <!-- Total Agents -->
                 <div class="bg-white overflow-hidden shadow rounded-xl">
@@ -218,8 +380,8 @@
                 <div class="bg-white shadow rounded-xl">
                     <div class="px-6 py-4 border-b border-gray-200">
                         <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-gray-900">Colis récents</h3>
-                            <a href="/admin/couriers" class="text-sm text-primary-600 hover:text-primary-800">Voir tout →</a>
+                            <h3 class="text-lg font-semibold text-gray-900">Courriers récents</h3>
+                            <a href="{{ route('couriers.index') }}" class="text-sm text-primary-600 hover:text-primary-800">Voir tout →</a>
                         </div>
                     </div>
                     <div class="divide-y divide-gray-200">
@@ -227,29 +389,52 @@
                             %loop($recent_couriers as $courier)
                             <div class="px-6 py-4 hover:bg-gray-50">
                                 <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-900">{{ $courier->tracking_number }}</p>
-                                        <p class="text-sm text-gray-500">{{ $courier->receiver_name }}</p>
+                                    <div class="flex items-center space-x-3">
+                                        <!-- Direction icon -->
+                                        <div class="flex-shrink-0">
+                                            %if($courier->direction === 'incoming')
+                                            <div class="p-2 bg-green-100 rounded-lg">
+                                                <svg class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                                                </svg>
+                                            </div>
+                                            %else
+                                            <div class="p-2 bg-blue-100 rounded-lg">
+                                                <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                                </svg>
+                                            </div>
+                                            %endif
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">{{ $courier->tracking_number }}</p>
+                                            <p class="text-sm text-gray-500">{{ $courier->receiver_name }}</p>
+                                        </div>
                                     </div>
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                        %if($courier->status === 'delivered')
-                                        bg-green-100 text-green-800
-                                        %elseif($courier->status === 'in_transit')
-                                        bg-purple-100 text-purple-800
-                                        %elseif($courier->status === 'pending')
-                                        bg-yellow-100 text-yellow-800
-                                        %else
-                                        bg-gray-100 text-gray-800
-                                        %endif
-                                    ">
-                                        {{ $courier->getStatusLabel() }}
-                                    </span>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $courier->getDirectionColorClass() }}">
+                                            {{ $courier->getDirectionLabel() }}
+                                        </span>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                            %if($courier->status === 'delivered')
+                                            bg-green-100 text-green-800
+                                            %elseif($courier->status === 'in_transit')
+                                            bg-purple-100 text-purple-800
+                                            %elseif($courier->status === 'pending')
+                                            bg-yellow-100 text-yellow-800
+                                            %else
+                                            bg-gray-100 text-gray-800
+                                            %endif
+                                        ">
+                                            {{ $courier->getStatusLabel() }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                             %endloop
                         %else
                             <div class="px-6 py-8 text-center text-gray-500">
-                                Aucun colis enregistré
+                                Aucun courrier enregistré
                             </div>
                         %endif
                     </div>
@@ -260,7 +445,7 @@
                     <div class="px-6 py-4 border-b border-gray-200">
                         <div class="flex items-center justify-between">
                             <h3 class="text-lg font-semibold text-gray-900">Agents récents</h3>
-                            <a href="/admin/agents" class="text-sm text-primary-600 hover:text-primary-800">Voir tout →</a>
+                            <a href="{{ route('users.index') }}" class="text-sm text-primary-600 hover:text-primary-800">Voir tout →</a>
                         </div>
                     </div>
                     <div class="divide-y divide-gray-200">

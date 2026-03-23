@@ -80,7 +80,7 @@ class UserController
         if (is_array($appAccess)) {
             $user->app_access = implode(',', $appAccess);
         } else {
-            $user->app_access = $appAccess ?: AppAccess::COURRIER->value;
+            $user->app_access = $appAccess ?: AppAccess::COURIERS->value;
         }
 
         $user->persist();
