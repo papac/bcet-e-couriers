@@ -123,7 +123,7 @@ class CourierController
 
         $directionLabel = CourierDirection::tryFrom($request->get('direction'))?->label() ?? '';
 
-        return redirect('/app/couriers')->withFlash('success', "Courrier ({$directionLabel}) créé avec succès - N° {$courier->tracking_number}");
+        return redirect(route('admin.couriers.index'))->withFlash('success', "Courrier ({$directionLabel}) créé avec succès - N° {$courier->tracking_number}");
     }
 
     /**
@@ -225,7 +225,7 @@ class CourierController
         $courier = Courier::find($id);
 
         if (!$courier) {
-            return redirect('/app/couriers')->withFlash('error', 'Colis non trouvé');
+            return redirect(route('admin.couriers.index'))->withFlash('error', 'Colis non trouvé');
         }
 
         $history = CourierStatusHistory::where('courier_id', $id)
@@ -250,7 +250,7 @@ class CourierController
         $courier = Courier::find($id);
 
         if (!$courier) {
-            return redirect('/app/couriers')->withFlash('error', 'Colis non trouvé');
+            return redirect(route('admin.couriers.index'))->withFlash('error', 'Colis non trouvé');
         }
 
         $services = Service::where('is_active', true)->orderBy('name')->get();
@@ -271,7 +271,7 @@ class CourierController
         $courier = Courier::find($id);
 
         if (!$courier) {
-            return redirect('/app/couriers')->withFlash('error', 'Colis non trouvé');
+            return redirect(route('admin.couriers.index'))->withFlash('error', 'Colis non trouvé');
         }
 
         $request->validate([
@@ -297,7 +297,7 @@ class CourierController
 
         $courier->persist();
 
-        return redirect("/app/couriers/{$id}")->withFlash('success', 'Courrier mis à jour avec succès');
+        return redirect(route('admin.couriers.show', ['id' => $id]))->withFlash('success', 'Courrier mis à jour avec succès');
     }
 
     /**
@@ -312,7 +312,7 @@ class CourierController
         $courier = Courier::find($id);
 
         if (!$courier) {
-            return redirect('/app/couriers')->withFlash('error', 'Colis non trouvé');
+            return redirect(route('admin.couriers.index'))->withFlash('error', 'Colis non trouvé');
         }
 
         $request->validate([
@@ -323,7 +323,7 @@ class CourierController
         $newStatus = $request->get('status');
 
         $courier->status = $newStatus;
-        $courier->save();
+        $courier->persist();
 
         // Create status history
         CourierStatusHistory::create([
@@ -334,6 +334,6 @@ class CourierController
             'comment' => $request->get('comment')
         ]);
 
-        return redirect("/app/couriers/{$id}")->withFlash('success', 'Statut mis à jour avec succès');
+        return redirect(route('admin.couriers.show', ['id' => $id]))->withFlash('success', 'Statut mis à jour avec succès');
     }
 }

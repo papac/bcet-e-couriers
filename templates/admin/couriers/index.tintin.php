@@ -30,20 +30,20 @@
             </button>
             <div class="flex-1 px-4 flex justify-between items-center">
                 <h1 class="text-xl font-semibold text-gray-900">Tous les colis</h1>
-                <a href="/logout" class="text-sm text-red-600 hover:text-red-800">Déconnexion</a>
+                <a href="{{ route('auth.logout') }}" class="text-sm text-red-600 hover:text-red-800">Déconnexion</a>
             </div>
         </div>
 
         <main class="flex-1 p-6">
-            %if(flash('success'))
+            %if(session()->has('success'))
             <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
-                {{ flash('success') }}
+                {{ session()->flash('success') }}
             </div>
             %endif
 
             <!-- Filters -->
             <div class="mb-6 bg-white shadow rounded-xl p-4">
-                <form method="GET" action="/admin/couriers" class="flex flex-col sm:flex-row gap-4">
+                <form method="GET" action="{{ route('admin.couriers.index') }}" class="flex flex-col sm:flex-row gap-4">
                     <div class="flex-1">
                         <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Rechercher (N° suivi, nom, téléphone)..."
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
@@ -126,7 +126,7 @@
                                         {{ date('d/m/Y H:i', strtotime($courier->created_at)) }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="/admin/couriers/{{ $courier->id }}" class="text-primary-600 hover:text-primary-900">
+                                        <a href="{{ route('admin.couriers.show', ['id' => $courier->id]) }}" class="text-primary-600 hover:text-primary-900">
                                             Détails
                                         </a>
                                     </td>

@@ -6,7 +6,7 @@ use App\Enums\AppAccess;
 use Bow\Http\Request;
 use Bow\Middleware\BaseMiddleware;
 
-class AppAccessMiddleware extends BaseMiddleware
+class AppAccessMiddleware implements BaseMiddleware
 {
     /**
      * Handle an incoming request
@@ -16,7 +16,7 @@ class AppAccessMiddleware extends BaseMiddleware
      * @param array $params Middleware parameters [app]
      * @return mixed
      */
-    public function process(Request $request, callable $next, array $params = [])
+    public function process(Request $request, callable $next, array $params = []): mixed
     {
         $user = app_auth()->user();
 
@@ -35,12 +35,12 @@ class AppAccessMiddleware extends BaseMiddleware
         $appEnum = AppAccess::tryFrom($app);
 
         if (!$appEnum) {
-            return redirect('/app')->withFlash('error', 'Application invalide');
+            return redirect(route('dashboard'))->withFlash('error', 'Application invalide');
         }
 
         // Check if user has access to this app
         if (!$user->hasAppAccess($appEnum)) {
-            return redirect('/app')->withFlash('error', "Vous n'avez pas accès à l'application " . $appEnum->label());
+            return redirect(route('dashboard'))->withFlash('error', "Vous n'avez pas accès à l'application " . $appEnum->label());
         }
 
         return $next($request);

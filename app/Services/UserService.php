@@ -46,7 +46,7 @@ class UserService
         $this->user->lastname = $lastname;
         $this->user->email = $email;
         $this->user->password = app_hash("password");
-        $this->user->save();
+        $this->user->persist();
 
         return $this->user;
     }

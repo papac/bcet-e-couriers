@@ -11,7 +11,7 @@
         <!-- Header -->
         <div class="mb-6">
             <div class="flex items-center space-x-3">
-                <a href="{{ route('couriers.index') }}" class="text-gray-500 hover:text-gray-700">
+                <a href="{{ route('admin.couriers.index') }}" class="text-gray-500 hover:text-gray-700">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
@@ -45,13 +45,13 @@
             </div>
         </div>
 
-        %if(flash('error'))
+        %if(session()->has('error'))
         <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-            {{ flash('error') }}
+            {{ session()->flash('error') }}
         </div>
         %endif
 
-        <form action="{{ route('couriers.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('admin.couriers.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             {{{ csrf_field() }}}
             <input type="hidden" name="direction" value="{{ $direction->value }}">
 
@@ -217,7 +217,7 @@
 
             <!-- Actions -->
             <div class="flex items-center justify-end space-x-4">
-                <a href="{{ route('couriers.index') }}" class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+                <a href="{{ route('admin.couriers.index') }}" class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
                     Annuler
                 </a>
                 <button type="submit" class="px-6 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white {{ $direction->value === 'incoming' ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500' : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500' }} focus:outline-none focus:ring-2 focus:ring-offset-2">

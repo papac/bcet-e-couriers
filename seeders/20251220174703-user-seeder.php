@@ -19,7 +19,7 @@ class UserSeeder20251220174703
                 'is_active' => true,
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
-            ]);
+            ])->persist();
         }
 
         $faker = FakerFactory::create();
@@ -34,7 +34,7 @@ class UserSeeder20251220174703
                 'updated_at' => date('Y-m-d H:i:s'),
             ];
 
-            User::create($user);
+            User::create($user)->persist();
         }
     }
 }

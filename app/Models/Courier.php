@@ -307,6 +307,6 @@ class Courier extends Model
     public function transferToService(int $serviceId): void
     {
         $this->current_service_id = $serviceId;
-        $this->save();
+        $this->persist();
     }
 }

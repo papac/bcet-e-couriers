@@ -33,7 +33,7 @@
                             </svg>
                             Utilisateurs
                         </a>
-                        <a href="{{ route('couriers.index') }}" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md {{ str_contains(request()->url(), '/couriers') ? 'bg-primary-900 text-white' : 'text-primary-100 hover:bg-primary-700 hover:text-white' }}">
+                        <a href="{{ route('admin.couriers.index') }}" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md {{ str_contains(request()->url(), '/couriers') ? 'bg-primary-900 text-white' : 'text-primary-100 hover:bg-primary-700 hover:text-white' }}">
                             <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                             </svg>
@@ -91,7 +91,7 @@
             <div class="px-2 pt-2 pb-3 space-y-1">
                 <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->url() === route('dashboard') ? 'bg-primary-900 text-white' : 'text-primary-100 hover:bg-primary-700' }}">Dashboard</a>
                 <a href="{{ route('users.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ str_contains(request()->url(), '/users') ? 'bg-primary-900 text-white' : 'text-primary-100 hover:bg-primary-700' }}">Utilisateurs</a>
-                <a href="{{ route('couriers.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ str_contains(request()->url(), '/couriers') ? 'bg-primary-900 text-white' : 'text-primary-100 hover:bg-primary-700' }}">Colis</a>
+                <a href="{{ route('admin.couriers.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ str_contains(request()->url(), '/couriers') ? 'bg-primary-900 text-white' : 'text-primary-100 hover:bg-primary-700' }}">Colis</a>
                 <a href="{{ route('services.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ str_contains(request()->url(), '/services') ? 'bg-primary-900 text-white' : 'text-primary-100 hover:bg-primary-700' }}">Services</a>
             </div>
             <div class="pt-4 pb-3 border-t border-primary-700">
@@ -113,15 +113,15 @@
 
     <!-- Main content -->
     <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            %if(flash('success'))
+            %if(session()->has('success'))
             <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
-                {{ flash('success') }}
+                {{ session()->flash('success') }}
             </div>
             %endif
 
-            %if(flash('error'))
+            %if(session()->has('error'))
             <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                {{ flash('error') }}
+                {{ session()->flash('error') }}
             </div>
             %endif
 
@@ -130,7 +130,7 @@
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Actions rapides</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <!-- Réception de courrier -->
-                    <a href="{{ route('couriers.incoming.create') }}" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl p-6 shadow-lg transition-all duration-200 transform hover:scale-[1.02]">
+                    <a href="{{ route('admin.couriers.incoming.create') }}" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl p-6 shadow-lg transition-all duration-200 transform hover:scale-[1.02]">
                         <div class="flex items-center">
                             <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -144,7 +144,7 @@
                         </div>
                     </a>
                     <!-- Départ de courrier -->
-                    <a href="{{ route('couriers.outgoing.create') }}" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl p-6 shadow-lg transition-all duration-200 transform hover:scale-[1.02]">
+                    <a href="{{ route('admin.couriers.outgoing.create') }}" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl p-6 shadow-lg transition-all duration-200 transform hover:scale-[1.02]">
                         <div class="flex items-center">
                             <div class="p-3 bg-white/20 rounded-lg">
                                 <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -381,7 +381,7 @@
                     <div class="px-6 py-4 border-b border-gray-200">
                         <div class="flex items-center justify-between">
                             <h3 class="text-lg font-semibold text-gray-900">Courriers récents</h3>
-                            <a href="{{ route('couriers.index') }}" class="text-sm text-primary-600 hover:text-primary-800">Voir tout →</a>
+                            <a href="{{ route('admin.couriers.index') }}" class="text-sm text-primary-600 hover:text-primary-800">Voir tout →</a>
                         </div>
                     </div>
                     <div class="divide-y divide-gray-200">

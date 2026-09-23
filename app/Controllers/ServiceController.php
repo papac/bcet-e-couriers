@@ -64,9 +64,9 @@ class ServiceController
         $service->email = $request->get('email');
         $service->chief_id = $request->get('chief_id') ?: null;
         $service->is_active = true;
-        $service->save();
+        $service->persist();
 
-        return redirect('/app/services')->withFlash('success', "Service '{$service->name}' créé avec succès");
+        return redirect(route('services.index'))->withFlash('success', "Service '{$service->name}' créé avec succès");
     }
 
     /**
@@ -80,7 +80,7 @@ class ServiceController
         $service = Service::find($id);
 
         if (!$service) {
-            return redirect('/app/services')->withFlash('error', 'Service non trouvé');
+            return redirect(route('services.index'))->withFlash('error', 'Service non trouvé');
         }
 
         $agents = User::where('is_active', true)->orderBy('name')->get();
@@ -99,7 +99,7 @@ class ServiceController
         $service = Service::find($id);
 
         if (!$service) {
-            return redirect('/app/services')->withFlash('error', 'Service non trouvé');
+            return redirect(route('services.index'))->withFlash('error', 'Service non trouvé');
         }
 
         $request->validate([
@@ -114,9 +114,9 @@ class ServiceController
         $service->email = $request->get('email');
         $service->chief_id = $request->get('chief_id') ?: null;
         $service->is_active = $request->get('is_active') ? true : false;
-        $service->save();
+        $service->persist();
 
-        return redirect('/app/services')->withFlash('success', 'Service mis à jour avec succès');
+        return redirect(route('services.index'))->withFlash('success', 'Service mis à jour avec succès');
     }
 
     /**
@@ -130,14 +130,14 @@ class ServiceController
         $service = Service::find($id);
 
         if (!$service) {
-            return redirect('/app/services')->withFlash('error', 'Service non trouvé');
+            return redirect(route('services.index'))->withFlash('error', 'Service non trouvé');
         }
 
         $service->is_active = !$service->is_active;
-        $service->save();
+        $service->persist();
 
         $status = $service->is_active ? 'activé' : 'désactivé';
-        return redirect('/app/services')->withFlash('success', "Service {$status} avec succès");
+        return redirect(route('services.index'))->withFlash('success', "Service {$status} avec succès");
     }
 
     /**
@@ -151,17 +151,17 @@ class ServiceController
         $service = Service::find($id);
 
         if (!$service) {
-            return redirect('/app/services')->withFlash('error', 'Service non trouvé');
+            return redirect(route('services.index'))->withFlash('error', 'Service non trouvé');
         }
 
         // Check if service has associated users
         $usersCount = User::where('service_id', $id)->count();
         if ($usersCount > 0) {
-            return redirect('/app/services')->withFlash('error', "Impossible de supprimer: {$usersCount} utilisateur(s) associé(s)");
+            return redirect(route('services.index'))->withFlash('error', "Impossible de supprimer: {$usersCount} utilisateur(s) associé(s)");
         }
 
         $service->delete();
 
-        return redirect('/app/services')->withFlash('success', 'Service supprimé avec succès');
+        return redirect(route('services.index'))->withFlash('success', 'Service supprimé avec succès');
     }
 }

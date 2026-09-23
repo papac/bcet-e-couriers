@@ -30,21 +30,21 @@
             </button>
             <div class="flex-1 px-4 flex justify-between items-center">
                 <div class="flex items-center">
-                    <a href="/admin/couriers" class="text-gray-500 hover:text-gray-700 mr-4">
+                    <a href="{{ route('admin.couriers.index') }}" class="text-gray-500 hover:text-gray-700 mr-4">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
                     </a>
                     <h1 class="text-xl font-semibold text-gray-900">Détails du colis</h1>
                 </div>
-                <a href="/logout" class="text-sm text-red-600 hover:text-red-800">Déconnexion</a>
+                <a href="{{ route('auth.logout') }}" class="text-sm text-red-600 hover:text-red-800">Déconnexion</a>
             </div>
         </div>
 
         <main class="flex-1 p-6">
-            %if(flash('success'))
+            %if(session()->has('success'))
             <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
-                {{ flash('success') }}
+                {{ session()->flash('success') }}
             </div>
             %endif
 
@@ -291,7 +291,7 @@
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div x-show="showStatusModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="fixed inset-0 bg-gray-500 bg-opacity-75" @click="showStatusModal = false"></div>
             <div x-show="showStatusModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" class="relative inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <form action="/admin/couriers/{{ $courier->id }}/status" method="POST">
+                <form action="{{ route('admin.couriers.status', ['id' => $courier->id]) }}" method="POST">
                     {{ csrf_field() }}
                     {{ method_field('PUT') }}
                     <div class="bg-white px-6 pt-6 pb-4">

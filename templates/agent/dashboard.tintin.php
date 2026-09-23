@@ -106,9 +106,9 @@
 
     <!-- Main content -->
     <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        %if(flash('success'))
+        %if(session()->has('success'))
         <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
-            {{ flash('success') }}
+            {{ session()->flash('success') }}
         </div>
         %endif
 

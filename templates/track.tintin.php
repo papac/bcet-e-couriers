@@ -15,7 +15,7 @@
                 </div>
                 <span class="text-xl font-bold text-white">BCET/COURIERS</span>
             </a>
-            <a href="/login" class="px-6 py-2.5 bg-white text-primary-600 rounded-lg font-medium hover:bg-gray-100 transition">
+            <a href="{{ route('auth.index') }}" class="px-6 py-2.5 bg-white text-primary-600 rounded-lg font-medium hover:bg-gray-100 transition">
                 Se connecter
             </a>
         </div>

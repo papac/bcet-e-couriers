@@ -30,21 +30,21 @@
             </button>
             <div class="flex-1 px-4 flex justify-between items-center">
                 <div class="flex items-center">
-                    <a href="/agent/couriers/{{ $courier->id }}" class="text-gray-500 hover:text-gray-700 mr-4">
+                    <a href="{{ route('couriers.show', ['id' => $courier->id]) }}" class="text-gray-500 hover:text-gray-700 mr-4">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
                     </a>
                     <h1 class="text-xl font-semibold text-gray-900">Modifier le colis</h1>
                 </div>
-                <a href="/logout" class="text-sm text-red-600 hover:text-red-800">Déconnexion</a>
+                <a href="{{ route('auth.logout') }}" class="text-sm text-red-600 hover:text-red-800">Déconnexion</a>
             </div>
         </div>
 
         <main class="flex-1 p-6">
-            %if(flash('error'))
+            %if(session()->has('error'))
             <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                {{ flash('error') }}
+                {{ session()->flash('error') }}
             </div>
             %endif
 
@@ -53,7 +53,7 @@
                 <span class="text-lg font-mono font-bold text-primary-600">{{ $courier->tracking_number }}</span>
             </div>
 
-            <form action="/agent/couriers/{{ $courier->id }}" method="POST" class="space-y-6">
+            <form action="{{ route('couriers.update', ['id' => $courier->id]) }}" method="POST" class="space-y-6">
                 {{ csrf_field() }}
                 {{ method_field('PUT') }}
                 
@@ -156,7 +156,7 @@
 
                 <!-- Submit Buttons -->
                 <div class="flex items-center justify-end space-x-4">
-                    <a href="/agent/couriers/{{ $courier->id }}" class="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    <a href="{{ route('couriers.show', ['id' => $courier->id]) }}" class="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
                         Annuler
                     </a>
                     <button type="submit" class="px-8 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">

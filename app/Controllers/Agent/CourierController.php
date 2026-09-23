@@ -25,11 +25,13 @@ class CourierController
         $query = Courier::where('agent_id', $user->id);
 
         if ($search) {
-            $query->where('tracking_number', 'LIKE', "%{$search}%")
-                ->orWhere('sender_name', 'LIKE', "%{$search}%")
-                ->orWhere('receiver_name', 'LIKE', "%{$search}%")
-                ->orWhere('sender_phone', 'LIKE', "%{$search}%")
-                ->orWhere('receiver_phone', 'LIKE', "%{$search}%");
+            // Grouped so the OR conditions stay scoped to the agent's couriers
+            $like = "%{$search}%";
+            $query->whereRaw(
+                '(tracking_number LIKE ? OR sender_name LIKE ? OR receiver_name LIKE ? '
+                . 'OR sender_phone LIKE ? OR receiver_phone LIKE ?)',
+                [$like, $like, $like, $like, $like]
+            );
         }
 
         if ($status) {
@@ -104,7 +106,7 @@ class CourierController
             $courier->current_service_id = $request->get('origin_service_id'); // Initially at origin
         }
 
-        $courier->save();
+        $courier->persist();
 
         // Create initial status history
         $comment = $type === Courier::TYPE_SERVICE
@@ -122,7 +124,7 @@ class CourierController
         // Handle file uploads
         $this->handleFileUploads($request, $courier);
 
-        return redirect('/agent/couriers')->withFlash('success', "Colis créé avec succès. N° de suivi: {$courier->tracking_number}");
+        return redirect(route('couriers.index'))->withFlash('success', "Colis créé avec succès. N° de suivi: {$courier->tracking_number}");
     }
 
     /**
@@ -137,7 +139,7 @@ class CourierController
         $courier = Courier::where('id', $id)->where('agent_id', $user->id)->first();
 
         if (!$courier) {
-            return redirect('/agent/couriers')->withFlash('error', 'Colis non trouvé');
+            return redirect(route('couriers.index'))->withFlash('error', 'Colis non trouvé');
         }
 
         $history = CourierStatusHistory::where('courier_id', $id)
@@ -163,7 +165,7 @@ class CourierController
         $courier = Courier::where('id', $id)->where('agent_id', $user->id)->first();
 
         if (!$courier) {
-            return redirect('/agent/couriers')->withFlash('error', 'Colis non trouvé');
+            return redirect(route('couriers.index'))->withFlash('error', 'Colis non trouvé');
         }
 
         $services = Service::where('is_active', true)->orderBy('name')->get();
@@ -184,7 +186,7 @@ class CourierController
         $courier = Courier::where('id', $id)->where('agent_id', $user->id)->first();
 
         if (!$courier) {
-            return redirect('/agent/couriers')->withFlash('error', 'Colis non trouvé');
+            return redirect(route('couriers.index'))->withFlash('error', 'Colis non trouvé');
         }
 
         $request->validate([
@@ -206,9 +208,9 @@ class CourierController
         $courier->weight = $request->get('weight');
         $courier->price = $request->get('price');
         $courier->notes = $request->get('notes');
-        $courier->save();
+        $courier->persist();
 
-        return redirect('/agent/couriers')->withFlash('success', 'Colis mis à jour avec succès');
+        return redirect(route('couriers.index'))->withFlash('success', 'Colis mis à jour avec succès');
     }
 
     /**
@@ -224,7 +226,7 @@ class CourierController
         $courier = Courier::where('id', $id)->where('agent_id', $user->id)->first();
 
         if (!$courier) {
-            return redirect('/agent/couriers')->withFlash('error', 'Colis non trouvé');
+            return redirect(route('couriers.index'))->withFlash('error', 'Colis non trouvé');
         }
 
         $request->validate([
@@ -235,7 +237,7 @@ class CourierController
         $newStatus = $request->get('status');
 
         $courier->status = $newStatus;
-        $courier->save();
+        $courier->persist();
 
         // Create status history
         CourierStatusHistory::create([
@@ -246,7 +248,7 @@ class CourierController
             'comment' => $request->get('comment')
         ]);
 
-        return redirect("/agent/couriers/{$id}")->withFlash('success', 'Statut mis à jour avec succès');
+        return redirect(route('couriers.show', ['id' => $id]))->withFlash('success', 'Statut mis à jour avec succès');
     }
 
     /**
@@ -344,12 +346,12 @@ class CourierController
         $courier = Courier::where('id', $id)->where('agent_id', $user->id)->first();
 
         if (!$courier) {
-            return redirect('/agent/couriers')->withFlash('error', 'Colis non trouvé');
+            return redirect(route('couriers.index'))->withFlash('error', 'Colis non trouvé');
         }
 
         $this->handleFileUploads($request, $courier);
 
-        return redirect("/agent/couriers/{$id}")->withFlash('success', 'Fichiers ajoutés avec succès');
+        return redirect(route('couriers.show', ['id' => $id]))->withFlash('success', 'Fichiers ajoutés avec succès');
     }
 
     /**
@@ -367,13 +369,13 @@ class CourierController
         $courier = Courier::where('id', $courierId)->where('agent_id', $user->id)->first();
 
         if (!$courier) {
-            return redirect('/agent/couriers')->withFlash('error', 'Colis non trouvé');
+            return redirect(route('couriers.index'))->withFlash('error', 'Colis non trouvé');
         }
 
         $file = CourierFile::where('id', $fileId)->where('courier_id', $courierId)->first();
 
         if (!$file) {
-            return redirect("/agent/couriers/{$courierId}")->withFlash('error', 'Fichier non trouvé');
+            return redirect(route('couriers.show', ['id' => $courierId]))->withFlash('error', 'Fichier non trouvé');
         }
 
         // Delete physical files
@@ -390,6 +392,6 @@ class CourierController
         // Delete database record
         $file->delete();
 
-        return redirect("/agent/couriers/{$courierId}")->withFlash('success', 'Fichier supprimé avec succès');
+        return redirect(route('couriers.show', ['id' => $courierId]))->withFlash('success', 'Fichier supprimé avec succès');
     }
 }

@@ -22,15 +22,15 @@
                 <h2 class="text-2xl font-bold text-gray-900 mb-2">Connexion</h2>
                 <p class="text-gray-500 mb-6">Accédez à votre espace de gestion du couriers</p>
                 
-                %if(flash('error'))
+                %if(session()->has('error'))
                     <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                        {{ flash('error') }}
+                        {{ session()->flash('error') }}
                     </div>
                 %endif
 
-                %if(flash('success'))
+                %if(session()->has('success'))
                 <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
-                    {{ flash('success') }}
+                    {{ session()->flash('success') }}
                 </div>
                 %endif
 

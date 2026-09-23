@@ -30,21 +30,21 @@
             </button>
             <div class="flex-1 px-4 flex justify-between items-center">
                 <div class="flex items-center">
-                    <a href="/agent/couriers" class="text-gray-500 hover:text-gray-700 mr-4">
+                    <a href="{{ route('couriers.index') }}" class="text-gray-500 hover:text-gray-700 mr-4">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
                     </a>
                     <h1 class="text-xl font-semibold text-gray-900">Détails du colis</h1>
                 </div>
-                <a href="/logout" class="text-sm text-red-600 hover:text-red-800">Déconnexion</a>
+                <a href="{{ route('auth.logout') }}" class="text-sm text-red-600 hover:text-red-800">Déconnexion</a>
             </div>
         </div>
 
         <main class="flex-1 p-6">
-            %if(flash('success'))
+            %if(session()->has('success'))
             <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
-                {{ flash('success') }}
+                {{ session()->flash('success') }}
             </div>
             %endif
 
@@ -69,7 +69,7 @@
                     </span>
                 </div>
                 <div class="mt-4 sm:mt-0 flex space-x-3">
-                    <a href="/agent/couriers/{{ $courier->id }}/edit" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    <a href="{{ route('couriers.edit', ['id' => $courier->id]) }}" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
                         Modifier
                     </a>
                     <button @click="showStatusModal = true" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
@@ -225,7 +225,7 @@
                 
                 <!-- Upload Form -->
                 <div x-show="showUploadForm" x-collapse class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                    <form action="/agent/couriers/{{ $courier->id }}/files" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('couriers.files.upload', ['id' => $courier->id]) }}" method="POST" enctype="multipart/form-data">
                         {{ csrf_field() }}
                         <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-primary-400 transition-colors"
                             @dragover.prevent="dragover = true"
@@ -300,7 +300,7 @@
                                     <div class="mt-2 flex space-x-2">
                                         <a href="{{ $file->getUrl() }}" target="_blank" class="text-xs text-primary-600 hover:text-primary-700">Voir</a>
                                         <a href="{{ $file->getUrl() }}" download="{{ $file->original_name }}" class="text-xs text-gray-600 hover:text-gray-700">Télécharger</a>
-                                        <form action="/agent/couriers/{{ $courier->id }}/files/{{ $file->id }}" method="POST" class="inline" onsubmit="return confirm('Supprimer ce fichier ?')">
+                                        <form action="{{ route('couriers.files.delete', ['courierId' => $courier->id, 'fileId' => $file->id]) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer ce fichier ?')">
                                             {{ csrf_field() }}
                                             {{ method_field('DELETE') }}
                                             <button type="submit" class="text-xs text-red-600 hover:text-red-700">Supprimer</button>
@@ -329,7 +329,7 @@
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div x-show="showStatusModal" class="fixed inset-0 bg-gray-500 bg-opacity-75" @click="showStatusModal = false"></div>
             <div x-show="showStatusModal" class="relative inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <form action="/agent/couriers/{{ $courier->id }}/status" method="POST">
+                <form action="{{ route('couriers.status', ['id' => $courier->id]) }}" method="POST">
                     {{ csrf_field() }}
                     {{ method_field('PUT') }}
                     <div class="bg-white px-6 pt-6 pb-4">

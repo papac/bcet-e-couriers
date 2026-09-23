@@ -15,7 +15,13 @@ class DashboardController
      */
     public function index(): string
     {
-        $user = auth()->user();
+        $user = app_auth()->user();
+
+        if ($user === null) {
+            app_auth()->logout();
+
+            return redirect()->route('auth.index');
+        }
 
         if ($user->role === 'admin') {
             return (new AdminDashboardController())->index();

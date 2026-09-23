@@ -63,7 +63,7 @@ class UserController
 
         // Check if email already exists
         if (User::where('email', $request->get('email'))->exists()) {
-            return redirect('/app/users/create')->withFlash('error', 'Cet email existe déjà');
+            return redirect(route('users.create'))->withFlash('error', 'Cet email existe déjà');
         }
 
         $user = new User();
@@ -85,7 +85,7 @@ class UserController
 
         $user->persist();
 
-        return redirect('/app/users')->withFlash('success', 'Utilisateur créé avec succès');
+        return redirect(route('users.index'))->withFlash('success', 'Utilisateur créé avec succès');
     }
 
     /**
@@ -99,7 +99,7 @@ class UserController
         $user = User::where('id', $id)->where('role', 'agent')->first();
 
         if (!$user) {
-            return redirect('/app/users')->withFlash('error', 'Utilisateur non trouvé');
+            return redirect(route('users.index'))->withFlash('error', 'Utilisateur non trouvé');
         }
 
         $services = Service::where('is_active', true)->orderBy('name')->get();
@@ -119,7 +119,7 @@ class UserController
         $user = User::where('id', $id)->where('role', 'agent')->first();
 
         if (!$user) {
-            return redirect('/app/users')->withFlash('error', 'Utilisateur non trouvé');
+            return redirect(route('users.index'))->withFlash('error', 'Utilisateur non trouvé');
         }
 
         $request->validate([
@@ -134,7 +134,7 @@ class UserController
             ->first();
 
         if ($existingUser) {
-            return redirect("/app/users/{$id}/edit")->withFlash('error', 'Cet email existe déjà');
+            return redirect(route('users.edit', ['id' => $id]))->withFlash('error', 'Cet email existe déjà');
         }
 
         $user->name = $request->get('name');
@@ -158,7 +158,7 @@ class UserController
 
         $user->persist();
 
-        return redirect('/app/users')->withFlash('success', 'Utilisateur mis à jour avec succès');
+        return redirect(route('users.index'))->withFlash('success', 'Utilisateur mis à jour avec succès');
     }
 
     /**
@@ -172,14 +172,14 @@ class UserController
         $user = User::where('id', $id)->where('role', 'agent')->first();
 
         if (!$user) {
-            return redirect('/app/users')->withFlash('error', 'Utilisateur non trouvé');
+            return redirect(route('users.index'))->withFlash('error', 'Utilisateur non trouvé');
         }
 
         $user->is_active = !$user->is_active;
         $user->persist();
 
         $status = $user->is_active ? 'activé' : 'désactivé';
-        return redirect('/app/users')->withFlash('success', "Utilisateur {$status} avec succès");
+        return redirect(route('users.index'))->withFlash('success', "Utilisateur {$status} avec succès");
     }
 
     /**
@@ -193,16 +193,16 @@ class UserController
         $user = User::where('id', $id)->where('role', 'agent')->first();
 
         if (!$user) {
-            return redirect('/app/users')->withFlash('error', 'Utilisateur non trouvé');
+            return redirect(route('users.index'))->withFlash('error', 'Utilisateur non trouvé');
         }
 
         // Prevent deleting yourself
         if ($user->id === auth()->user()->id) {
-            return redirect('/app/users')->withFlash('error', 'Vous ne pouvez pas supprimer votre propre compte');
+            return redirect(route('users.index'))->withFlash('error', 'Vous ne pouvez pas supprimer votre propre compte');
         }
 
         $user->delete();
 
-        return redirect('/app/users')->withFlash('success', 'Utilisateur supprimé avec succès');
+        return redirect(route('users.index'))->withFlash('success', 'Utilisateur supprimé avec succès');
     }
 }

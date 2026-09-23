@@ -1,6 +1,15 @@
 {
   "yaml.schemas": {
     "file:///c%3A/Users/dakia/.vscode/extensions/atlassian.atlascode-3.0.2/resources/schemas/pipelines-schema.json": "bitbucket-pipelines.yml",
-    "https://www.artillery.io/schema.json": []
+    "https://www.artillery.io/schema.json": [],
+    "file:///Users/papac/.vscode/extensions/continue.continue-1.2.17-darwin-arm64/config-yaml-schema.json": [
+      ".continue/**/*.yaml"
+    ],
+    "file:///c%3A/Users/Dell/.vscode/extensions/continue.continue-1.2.17-win32-x64/config-yaml-schema.json": [
+      ".continue/**/*.yaml"
+    ],
+    "file:///Users/papac/.vscode/extensions/continue.continue-1.2.18-darwin-arm64/config-yaml-schema.json": [
+      ".continue/**/*.yaml"
+    ]
   }
 }

@@ -4,8 +4,9 @@ namespace App\Middlewares;
 
 use Bow\Http\Request;
 use Bow\Auth\Auth;
+use Bow\Middleware\BaseMiddleware;
 
-class AdminMiddleware
+class AdminMiddleware implements BaseMiddleware
 {
     /**
      * Handle the incoming request
@@ -14,7 +15,7 @@ class AdminMiddleware
      * @param callable $next
      * @return mixed
      */
-    public function handle(Request $request, callable $next)
+    public function process(Request $request, callable $next, array $args = []): mixed
     {
         if (!Auth::check()) {
             return redirect('/login');
@@ -23,7 +24,7 @@ class AdminMiddleware
         $user = Auth::user();
 
         if (!$user->isAdmin()) {
-            return redirect('/agent')->withFlash('error', 'Accès non autorisé');
+            return redirect(route('dashboard'))->withFlash('error', 'Accès non autorisé');
         }
 
         return $next($request);

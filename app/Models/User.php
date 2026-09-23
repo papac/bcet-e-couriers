@@ -33,7 +33,8 @@ class User extends AuthenticationModel
      * @var array
      */
     protected array $hidden = [
-        'password'
+        'password',
+        'remember_token'
     ];
 
     /**

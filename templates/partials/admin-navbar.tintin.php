@@ -27,7 +27,7 @@
                         </svg>
                         Utilisateurs
                     </a>
-                    <a href="{{ route('couriers.index') }}" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md {{ str_contains(request()->url(), '/couriers') ? 'bg-primary-900 text-white' : 'text-primary-100 hover:bg-primary-700 hover:text-white' }}">
+                    <a href="{{ route('admin.couriers.index') }}" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md {{ str_contains(request()->url(), '/couriers') ? 'bg-primary-900 text-white' : 'text-primary-100 hover:bg-primary-700 hover:text-white' }}">
                         <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                         </svg>
@@ -85,7 +85,7 @@
         <div class="px-2 pt-2 pb-3 space-y-1">
             <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->url() === route('dashboard') ? 'bg-primary-900 text-white' : 'text-primary-100 hover:bg-primary-700' }}">Dashboard</a>
             <a href="{{ route('users.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ str_contains(request()->url(), '/users') ? 'bg-primary-900 text-white' : 'text-primary-100 hover:bg-primary-700' }}">Utilisateurs</a>
-            <a href="{{ route('couriers.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ str_contains(request()->url(), '/couriers') ? 'bg-primary-900 text-white' : 'text-primary-100 hover:bg-primary-700' }}">Colis</a>
+            <a href="{{ route('admin.couriers.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ str_contains(request()->url(), '/couriers') ? 'bg-primary-900 text-white' : 'text-primary-100 hover:bg-primary-700' }}">Colis</a>
             <a href="{{ route('services.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ str_contains(request()->url(), '/services') ? 'bg-primary-900 text-white' : 'text-primary-100 hover:bg-primary-700' }}">Services</a>
         </div>
         <div class="pt-4 pb-3 border-t border-primary-700">

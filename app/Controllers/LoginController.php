@@ -17,7 +17,7 @@ class LoginController
     public function __invoke(Request $request): string
     {
         if (Auth::check()) {
-            return redirect($request->user()->isAdmin() ? '/admin' : '/agent');
+            return redirect(route('dashboard'));
         }
 
         return view('login');
@@ -43,12 +43,12 @@ class LoginController
         $user = User::where('email', $credentials['email'])->first();
 
         if (!$user) {
-            return redirect('/')->withFlash('error', 'Email ou mot de passe incorrect');
+            return redirect(route('auth.index'))->withFlash('error', 'Email ou mot de passe incorrect');
         }
 
         // Check if user is active
         if (!$user->is_active) {
-            return redirect('/')->withFlash('error', 'Votre compte a été désactivé');
+            return redirect(route('auth.index'))->withFlash('error', 'Votre compte a été désactivé');
         }
 
         // Attempt login
@@ -56,7 +56,7 @@ class LoginController
             // Increment failed attempts
             LoginRateLimitMiddleware::incrementAttempts($request);
 
-            return redirect('/')->withFlash('error', 'Email ou mot de passe incorrect');
+            return redirect(route('auth.index'))->withFlash('error', 'Email ou mot de passe incorrect');
         }
 
         // Clear rate limit on successful login
@@ -64,7 +64,7 @@ class LoginController
 
         app_auth()->login($user);
 
-        return redirect('/');
+        return redirect(route('dashboard'));
     }
 
     /**
@@ -76,6 +76,6 @@ class LoginController
     {
         Auth::logout();
 
-        return redirect('/')->withFlash('success', 'Vous avez été déconnecté');
+        return redirect(route('auth.index'))->withFlash('success', 'Vous avez été déconnecté');
     }
 }

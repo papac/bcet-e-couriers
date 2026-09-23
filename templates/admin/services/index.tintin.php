@@ -30,20 +30,20 @@
             </button>
             <div class="flex-1 px-4 flex justify-between items-center">
                 <h1 class="text-xl font-semibold text-gray-900">Gestion des services</h1>
-                <a href="/logout" class="text-sm text-red-600 hover:text-red-800">Déconnexion</a>
+                <a href="{{ route('auth.logout') }}" class="text-sm text-red-600 hover:text-red-800">Déconnexion</a>
             </div>
         </div>
 
         <main class="flex-1 p-6">
-            %if(flash('success'))
+            %if(session()->has('success'))
             <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
-                {{ flash('success') }}
+                {{ session()->flash('success') }}
             </div>
             %endif
 
-            %if(flash('error'))
+            %if(session()->has('error'))
             <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                {{ flash('error') }}
+                {{ session()->flash('error') }}
             </div>
             %endif
 
@@ -53,7 +53,7 @@
                     <h2 class="text-2xl font-bold text-gray-900">Services / Agences</h2>
                     <p class="mt-1 text-sm text-gray-500">Gérez les points de service et agences</p>
                 </div>
-                <a href="/admin/services/create" class="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700">
+                <a href="{{ route('services.create') }}" class="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700">
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
@@ -122,14 +122,14 @@
                                     %endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                    <a href="/admin/services/{{ $service->id }}/edit" class="text-primary-600 hover:text-primary-900">Modifier</a>
-                                    <form action="/admin/services/{{ $service->id }}/toggle-status" method="POST" class="inline">
+                                    <a href="{{ route('services.edit', ['id' => $service->id]) }}" class="text-primary-600 hover:text-primary-900">Modifier</a>
+                                    <form action="{{ route('services.toggle', ['id' => $service->id]) }}" method="POST" class="inline">
                                         {{ csrf_field() }}
                                         <button type="submit" class="text-yellow-600 hover:text-yellow-900">
                                             {{ $service->is_active ? 'Désactiver' : 'Activer' }}
                                         </button>
                                     </form>
-                                    <form action="/admin/services/{{ $service->id }}" method="POST" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce service?')">
+                                    <form action="{{ route('services.destroy', ['id' => $service->id]) }}" method="POST" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce service?')">
                                         {{ csrf_field() }}
                                         {{ method_field('DELETE') }}
                                         <button type="submit" class="text-red-600 hover:text-red-900">Supprimer</button>
@@ -144,7 +144,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                 </svg>
                                 <p class="mt-2">Aucun service trouvé</p>
-                                <a href="/admin/services/create" class="mt-2 inline-block text-primary-600 hover:text-primary-500">Créer un service</a>
+                                <a href="{{ route('services.create') }}" class="mt-2 inline-block text-primary-600 hover:text-primary-500">Créer un service</a>
                             </td>
                         </tr>
                         %endif

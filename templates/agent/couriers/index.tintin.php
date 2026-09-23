@@ -30,20 +30,20 @@
             </button>
             <div class="flex-1 px-4 flex justify-between items-center">
                 <h1 class="text-xl font-semibold text-gray-900">Mes colis</h1>
-                <a href="/logout" class="text-sm text-red-600 hover:text-red-800">Déconnexion</a>
+                <a href="{{ route('auth.logout') }}" class="text-sm text-red-600 hover:text-red-800">Déconnexion</a>
             </div>
         </div>
 
         <main class="flex-1 p-6">
-            %if(flash('success'))
+            %if(session()->has('success'))
             <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
-                {{ flash('success') }}
+                {{ session()->flash('success') }}
             </div>
             %endif
 
             <!-- Header with Search and Add Button -->
             <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <form method="GET" action="/agent/couriers" class="flex flex-col sm:flex-row gap-4 flex-1">
+                <form method="GET" action="{{ route('couriers.index') }}" class="flex flex-col sm:flex-row gap-4 flex-1">
                     <div class="flex-1 max-w-md">
                         <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Rechercher..."
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
@@ -58,7 +58,7 @@
                         Filtrer
                     </button>
                 </form>
-                <a href="/agent/couriers/create" class="inline-flex items-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700">
+                <a href="{{ route('couriers.create') }}" class="inline-flex items-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700">
                     <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
@@ -117,10 +117,10 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex items-center justify-end space-x-2">
-                                            <a href="/agent/couriers/{{ $courier->id }}" class="text-primary-600 hover:text-primary-900">
+                                            <a href="{{ route('couriers.show', ['id' => $courier->id]) }}" class="text-primary-600 hover:text-primary-900">
                                                 Détails
                                             </a>
-                                            <a href="/agent/couriers/{{ $courier->id }}/edit" class="text-gray-600 hover:text-gray-900">
+                                            <a href="{{ route('couriers.edit', ['id' => $courier->id]) }}" class="text-gray-600 hover:text-gray-900">
                                                 Modifier
                                             </a>
                                         </div>
@@ -134,7 +134,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                         </svg>
                                         <p class="mt-2">Aucun colis trouvé</p>
-                                        <a href="/agent/couriers/create" class="mt-4 inline-flex items-center text-primary-600 hover:text-primary-800">
+                                        <a href="{{ route('couriers.create') }}" class="mt-4 inline-flex items-center text-primary-600 hover:text-primary-800">
                                             <svg class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                             </svg>
